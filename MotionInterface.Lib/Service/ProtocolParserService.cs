@@ -9,7 +9,7 @@ public class ProtocolParserService
 {
     public readonly ProtocolFrame ProtocolFrame = new ();
 
-    public byte[] RecursiveBuffer = new byte[ProtocolRecursiveBufferSize];
+    public readonly byte[] RecursiveBuffer = new byte[ProtocolRecursiveBufferSize];
     public ushort ReadOffset;
     public ushort WriteOffset;
     public ushort FrameLen;
