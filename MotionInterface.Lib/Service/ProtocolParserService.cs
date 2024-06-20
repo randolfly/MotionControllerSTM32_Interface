@@ -1,10 +1,11 @@
-﻿using MotionInterface.Lib.Util;
-using static MotionInterface.Lib.Protocol.ProtocolCommand;
-using static MotionInterface.Lib.Protocol.ProtocolConfig;
+﻿using MotionInterface.Lib.Model;
+using MotionInterface.Lib.Util;
+using static MotionInterface.Lib.Model.ProtocolCommand;
+using static MotionInterface.Lib.Model.ProtocolConfig;
 
-namespace MotionInterface.Lib.Protocol;
+namespace MotionInterface.Lib.Service;
 
-public class ProtocolParser
+public class ProtocolParserService
 {
     public readonly ProtocolFrame ProtocolFrame = new ();
 
@@ -14,7 +15,7 @@ public class ProtocolParser
     public ushort FrameLen;
     public bool FoundFrameHead;
 
-    public ProtocolParser()
+    public ProtocolParserService()
     {
         
     }

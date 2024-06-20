@@ -1,4 +1,4 @@
-﻿namespace MotionInterface.Lib.Protocol;
+﻿namespace MotionInterface.Lib.Model;
 
 public static class ProtocolConfig
 {

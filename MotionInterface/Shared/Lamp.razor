@@ -1,0 +1,35 @@
+﻿<MTooltip Bottom>
+    <ActivatorContent>
+
+        <MChip Class="ma-2"
+               Color=@Color
+               Dark
+               @attributes="@context.Attrs"
+               Label>
+            <MAvatar Left>
+                <MIcon >
+                    mdi-connection
+                </MIcon>
+            </MAvatar>
+            @Name
+
+        </MChip>
+    </ActivatorContent>
+    <ChildContent>
+        <span>@Description</span>
+    </ChildContent>
+</MTooltip>
+
+@code {
+
+    [Parameter]
+    public string Name { get; set; }
+
+    [Parameter]
+    public bool Status { get; set; }
+
+    [Parameter]
+    public string Description { get; set; }
+
+    private string Color => Status ? "green lighten-2" : "amber darken-3";
+}

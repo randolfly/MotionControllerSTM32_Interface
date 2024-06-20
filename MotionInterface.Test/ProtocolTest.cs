@@ -1,14 +1,15 @@
+using MotionInterface.Lib.Model;
+using MotionInterface.Lib.Service;
 using MotionInterface.Lib.Util;
 using Xunit.Abstractions;
 
 namespace MotionInterface.Test;
-using Lib.Protocol;
 
 public class ProtocolTest
 {
     private readonly ITestOutputHelper _testOutputHelper;
     private ProtocolFrame ProtocolFrame { get; set; } = new ();
-    private ProtocolParser ProtocolParser { get; set; } = new();
+    private ProtocolParserService ProtocolParserService { get; set; } = new();
     private byte[] _protocolFrameDataPool = new byte[ProtocolConfig.ProtocolRecursiveBufferSize];
     private int _frameParseResult = (int)ProtocolCommand.NullCmd;
     
@@ -40,14 +41,14 @@ public class ProtocolTest
         _testOutputHelper.WriteLine("start protocol_data_receive_test\n");
         ProtocolFrame = InitProtocolFrame();
 
-        var checkReadOffset = ProtocolParser.WriteOffset;
-        var checkWriteOffset = (ushort)(ProtocolParser.WriteOffset + ProtocolFrame.Length);
+        var checkReadOffset = ProtocolParserService.WriteOffset;
+        var checkWriteOffset = (ushort)(ProtocolParserService.WriteOffset + ProtocolFrame.Length);
 
         WriteFrameBuffer(ProtocolFrame);
 
         for (var i = checkReadOffset; i < checkWriteOffset; i++)
         {
-            var parserData = ProtocolParser.RecursiveBuffer[i % ProtocolConfig.ProtocolRecursiveBufferSize];
+            var parserData = ProtocolParserService.RecursiveBuffer[i % ProtocolConfig.ProtocolRecursiveBufferSize];
             Assert.True(parserData.Equals(_protocolFrameDataPool[i]));
         }
     }
@@ -78,7 +79,7 @@ public class ProtocolTest
         CheckParseResult(protocolFrame1);
         CheckParseResult(protocolFrame2);
         CheckParseResult(protocolFrame4, protocolFrame3.Length);
-        _frameParseResult = ProtocolParser.ProtocolDataHandler();
+        _frameParseResult = ProtocolParserService.ProtocolDataHandler();
         Assert.True(_frameParseResult == (int)ProtocolCommand.NullCmd);
         WriteFrameBuffer(protocolFrame1);
         WriteFrameBuffer(protocolFrame2);
@@ -121,12 +122,12 @@ public class ProtocolTest
         // test on ProtocolRecursiveBufferSize = 41;
         // note: do not set 40, the size should be prime to n*frameSize
         // or the readOffset may equal to writeOffset, the corner case is not easy to handle
-        preReadOffset += ProtocolParser.ReadOffset;
-        _frameParseResult = ProtocolParser.ProtocolDataHandler();
+        preReadOffset += ProtocolParserService.ReadOffset;
+        _frameParseResult = ProtocolParserService.ProtocolDataHandler();
         Assert.True(_frameParseResult == (int)protocolFrame.Command);
-        Assert.False(ProtocolParser.FoundFrameHead);
-        Assert.True((ProtocolParser.ReadOffset%ProtocolConfig.ProtocolRecursiveBufferSize) == (ProtocolFrame.Length + preReadOffset)%ProtocolConfig.ProtocolRecursiveBufferSize);
-        var testFrame = ProtocolParser.ProtocolFrame;
+        Assert.False(ProtocolParserService.FoundFrameHead);
+        Assert.True((ProtocolParserService.ReadOffset%ProtocolConfig.ProtocolRecursiveBufferSize) == (ProtocolFrame.Length + preReadOffset)%ProtocolConfig.ProtocolRecursiveBufferSize);
+        var testFrame = ProtocolParserService.ProtocolFrame;
         Assert.True(protocolFrame.Header == testFrame.Header);
         Assert.True(protocolFrame.MotorId == testFrame.MotorId);
         Assert.True(protocolFrame.Command == testFrame.Command);
@@ -145,7 +146,7 @@ public class ProtocolTest
             Length = (ushort)(ProtocolConfig.ProtocolFrameHeaderSize +
                               ProtocolConfig.ProtocolFrameChecksumSize + 
                               ProtocolFrame.ParamData.Length),
-            ParamData = []
+            ParamData = Array.Empty<byte>()
         };
         return protocolFrame;
     }
@@ -153,7 +154,7 @@ public class ProtocolTest
     private void WriteFrameBuffer(ProtocolFrame protocolFrame)
     {
         protocolFrame.SerializeFrameData(ref _protocolFrameDataPool);
-        ProtocolParser.ProtocolDataReceive(ref _protocolFrameDataPool, 
+        ProtocolParserService.ProtocolDataReceive(ref _protocolFrameDataPool, 
             protocolFrame.Length);
     }
 }

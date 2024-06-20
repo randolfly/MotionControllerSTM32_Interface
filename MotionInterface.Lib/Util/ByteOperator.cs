@@ -1,4 +1,6 @@
 ﻿
+using System.Text;
+
 namespace MotionInterface.Lib.Util;
 using System.Buffers.Binary;
 public static class ByteOperator
@@ -48,5 +50,15 @@ public static class ByteOperator
         if (ReferenceEquals(x, y)) return true;
         if (x is null || y is null) return false;
         return x.Length == y.Length && x.SequenceEqual(y);
+    }
+    
+    public static string ToHexString(this byte[] data)
+    {
+        var sb = new StringBuilder();
+        foreach (var b in data)
+        {
+            sb.Append(b.ToString("X2"));
+        }
+        return sb.ToString();
     }
 }

@@ -1,44 +1,40 @@
 ﻿@inherits LayoutComponentBase
-
 <MApp>
-    <MAppBar App>
-        <MAppBarNavIcon @onclick="() => _drawer = !_drawer"></MAppBarNavIcon>
-        <MToolbarTitle>MotionInterface</MToolbarTitle>
-        <MSpacer></MSpacer>
-        <MButton Text Color="primary" Target="_blank" Href="https://docs.masastack.com/blazor/introduction/why-masa-blazor">About</MButton>
-    </MAppBar>
+    <MNavigationDrawer App Permanent Width="80">
+        <div class="d-flex flex-column" style="height: inherit">
+            <MList Nav Routable Dense>
+                <MListItem Href="/CommandUI" ActiveClass="primary--text">
+                    <MListItemContent >
+                        <MListItemIcon Class="d-flex justify-center">
+                            <MIcon Icon="@("mdi-home")"/>
+                        </MListItemIcon>
+                        <MListItemSubtitle Class="d-flex justify-center">Cmd</MListItemSubtitle>
+                    </MListItemContent>
+                </MListItem>
+                <MListItem Href="/DataLog" ActiveClass="primary--text">
+                    <MListItemContent >
+                        <MListItemIcon Class="d-flex justify-center">
+                            <MIcon Icon="@("mdi-database")"/>
+                        </MListItemIcon>
+                        <MListItemSubtitle Class="d-flex justify-center">Log</MListItemSubtitle>
+                    </MListItemContent>
+                </MListItem>
+            </MList>
+            <MList Nav Routable Dense Class="mt-auto">
+                <MListItem Href="/setting" ActiveClass="primary--text">
+                    <MListItemContent>
+                        <MListItemIcon  Class="d-flex justify-center">
+                            <MIcon Icon="@("mdi-cog")"/>
+                        </MListItemIcon>
+                        <MListItemTitle  Class="d-flex justify-center">Setting</MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+            </MList>
+        </div>
 
-    <MNavigationDrawer App @bind-Value="_drawer">
-        <MList Nav Routable>
-            <MListItem Href="/" ActiveClass="primary--text">
-                <MListItemIcon>
-                    <MIcon>mdi-home</MIcon>
-                </MListItemIcon>
-                <MListItemContent>
-                    <MListItemTitle>Home</MListItemTitle>
-                </MListItemContent>
-            </MListItem>
-            <MListItem Href="/counter" ActiveClass="primary--text">
-                <MListItemIcon>
-                    <MIcon>mdi-plus</MIcon>
-                </MListItemIcon>
-                <MListItemContent>
-                    <MListItemTitle>Counter</MListItemTitle>
-                </MListItemContent>
-            </MListItem>
-            <MListItem Href="/fetchdata" ActiveClass="primary--text">
-                <MListItemIcon>
-                    <MIcon>mdi-list-box</MIcon>
-                </MListItemIcon>
-                <MListItemContent>
-                    <MListItemTitle>Fetch data</MListItemTitle>
-                </MListItemContent>
-            </MListItem>
-        </MList>
     </MNavigationDrawer>
-
     <MMain>
-        <MContainer Fluid>
+        <MContainer Fluid Style="height:100%">
             <MErrorHandler>
                 @Body
             </MErrorHandler>
@@ -47,7 +43,5 @@
 </MApp>
 
 @code {
-
-    private bool? _drawer;
 
 }

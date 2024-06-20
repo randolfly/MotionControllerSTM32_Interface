@@ -1,5 +1,7 @@
-﻿namespace MotionInterface.Lib.Protocol;
-using Util;
+﻿using System.Text;
+using MotionInterface.Lib.Util;
+
+namespace MotionInterface.Lib.Model;
 
 public class ProtocolFrame
 {
@@ -64,5 +66,11 @@ public class ProtocolFrame
         Checksum = targetFrameData[Length - 1];
     }
 
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+        sb.Append($"{MotorId}::{Command}_{ParamData.Length}");
+        return sb.ToString();
+    }
 }
 

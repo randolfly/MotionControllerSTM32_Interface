@@ -1,0 +1,21 @@
+﻿@using MotionInterface.Lib.Model
+@using MotionInterface.Lib.Util
+<MListItem>
+    
+    <MContainer>
+        <MRow>
+            <MCol Cols="4" Style="display: flex; justify-content: flex-start">
+                @ProtocolFrame.Command
+            </MCol>
+            <MCol>
+                @ProtocolFrame.ParamData.ToHexString()
+            </MCol>
+        </MRow>
+    </MContainer>
+
+</MListItem>
+
+@code {
+    [Parameter] 
+    public ProtocolFrame ProtocolFrame { get; set; } = new();
+}
