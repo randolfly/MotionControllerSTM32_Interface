@@ -8,7 +8,7 @@ namespace MotionInterface.Test;
 public class ProtocolTest
 {
     private readonly ITestOutputHelper _testOutputHelper;
-    private ProtocolFrame ProtocolFrame { get; set; } = new ();
+    private ProtocolFrame ProtocolFrame { get; set; } = new();
     private ProtocolParserService ProtocolParserService { get; set; } = new();
     private byte[] _protocolFrameDataPool = new byte[ProtocolConfig.ProtocolRecursiveBufferSize];
     private int _frameParseResult = (int)ProtocolCommand.NullCmd;
@@ -117,6 +117,7 @@ public class ProtocolTest
             CheckParseResult(protocolFrame);
         }
     }
+    
     private void CheckParseResult(ProtocolFrame protocolFrame, int preReadOffset = 0)
     {
         // test on ProtocolRecursiveBufferSize = 41;

@@ -6,7 +6,7 @@ namespace MotionInterface.Lib.Service;
 
 public class CommandCommunicationService
 {
-    public readonly SerialPort SerialPort = new();
+    public SerialPort SerialPort = new();
     public readonly List<ProtocolFrame> ReceivedProtocolFrameList = new ();
     public readonly List<ProtocolFrame> SendProtocolFrameList = new ();
     public ProtocolFrame ProtocolFrame = new();
@@ -19,6 +19,11 @@ public class CommandCommunicationService
         SerialPort.DataReceived += PortDataReceived;
         _periodicActionTimer = new PeriodicActionTimer(ParseReceivedFrames, 100);
     }
+
+    public bool IsPortOpen => SerialPort.IsOpen;
+    
+    // extended action for the parsed frame data event
+    public Action<ProtocolFrame>? OnParseFrameDataAction { get; set; }
 
     #region SendFrameData
 
@@ -49,22 +54,19 @@ public class CommandCommunicationService
         if (ProtocolParserService.ProtocolFrame == null) return;
         ProtocolFrame = ProtocolParserService.ProtocolFrame;
         ReceivedProtocolFrameList.Add(ProtocolParserService.ProtocolFrame);
+        OnParseFrameDataAction?.Invoke(ProtocolFrame);
     }
 
     #endregion
 
     #region util functions
 
-    public static string[] GetAvailablePorts()
-    {
-        return SerialPort.GetPortNames();
-    }
-    
+   
     public void OpenPort()
     {
         try
         {
-            if (SerialPort.IsOpen) return;
+            if (IsPortOpen) return;
             SerialPort.Open();
             _periodicActionTimer.StartTimer();
         }
@@ -78,7 +80,7 @@ public class CommandCommunicationService
     {
         try
         {
-            if (!SerialPort.IsOpen) return;
+            if (!IsPortOpen) return;
             SerialPort.Close();
             _periodicActionTimer.StopTimer();
         }

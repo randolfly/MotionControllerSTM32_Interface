@@ -1,6 +1,26 @@
 ﻿@page "/Setting"
-<h3>Setting</h3>
+@page "/"
+
+@using MotionInterface.Lib.Service
+
+
+<MRow>
+    <MCol Cols="4">
+        <MCard>
+            <MCardTitle>CmdPort Config</MCardTitle>
+            <SerialPortConfig SerialPort="CommandCommunicationService.SerialPort"></SerialPortConfig>
+        </MCard>
+    </MCol>
+    <MCol Cols="4">
+        <MCard>
+            <MCardTitle>LogPort Config</MCardTitle>
+        </MCard>
+    </MCol>
+</MRow>
+
 
 @code {
-    
+    [Inject] 
+    private CommandCommunicationService CommandCommunicationService { get; set; } = default!;
+
 }

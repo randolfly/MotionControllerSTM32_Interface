@@ -1,14 +1,14 @@
 ﻿@page "/CommandUI"
-@page "/"
 @using MotionInterface.Lib.Model
+@using MotionInterface.Lib.Service
 
 <MContainer Fluid Class="fill-height">
     <MRow Style="min-height:200px"> 
         <MCol Cols="12" Sm="6">
             <MCard Class="fill-height">
                 <MCardTitle>Receive Frames</MCardTitle>
-                <MVirtualScroll Height="300" OverscanCount="20" ItemSize="40"
-                                Items="ReceivedProtocolFrameList">
+                <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
+                                Items="CommandCommunicationService.ReceivedProtocolFrameList">
                     <ItemContent>
                         <MListItem>
                             <CommandFrame ProtocolFrame="@context"></CommandFrame>
@@ -20,8 +20,8 @@
         <MCol Cols="12" Sm="6">
             <MCard Class="fill-height">
                 <MCardTitle>Send Frames</MCardTitle>
-                <MVirtualScroll Height="300" OverscanCount="20" ItemSize="40"
-                                Items="SendProtocolFrameList">
+                <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
+                                Items="CommandCommunicationService.SendProtocolFrameList">
                     <ItemContent>
                         <MListItem>
                             <CommandFrame ProtocolFrame="@context"></CommandFrame>
@@ -32,9 +32,14 @@
         </MCol>
     </MRow>
     
-    <MRow NoGutters Style="margin-top: 10px;" Align="AlignTypes.End">
-        
-        <MCol Cols="5" Sm="4" Align="AlignTypes.Start">
+    <MRow NoGutters Style="margin-top: 10px;">
+        <MCol Cols="1" Style="display: flex;justify-content:space-around">
+            <MButton Icon Color="@_portStatusLed"
+                     OnClick="ToggleSerialPort">
+                <MIcon>mdi-power</MIcon>
+            </MButton>
+        </MCol>
+        <MCol Cols="4" Align="AlignTypes.Start">
             <MAutocomplete @bind-Value="ProtocolFrame.Command"
                            Items="Enum.GetValues(typeof(ProtocolCommand))
                          .Cast<ProtocolCommand>().ToList()"
@@ -58,10 +63,9 @@
                            Placeholder="Start typing to Search"
                            Label="Command"></MAutocomplete>
         </MCol>
-        <MCol Cols="2" Sm="1" 
-              Align="AlignTypes.Start"
-              Style="display: flex;justify-content: flex-end">
-            <MButton Icon Color="indigo">
+        <MCol Cols="1" Style="display: flex;justify-content:space-around">
+            <MButton Icon Color="indigo" 
+                     OnClick="SendProtocolFrame">
                 <MIcon>mdi-send</MIcon>
             </MButton>
         </MCol>
@@ -71,43 +75,66 @@
 
 
 @code {
-    private StringNumber selectedReceiveFrame = 1;
-    private StringNumber selectedSendFrame = 1;
+    private ProtocolFrame ProtocolFrame { get; set; } = new();
+    [Inject] 
+    private CommandCommunicationService CommandCommunicationService { get; set; } = default!;
 
-    public List<ProtocolFrame> ReceivedProtocolFrameList = new ();
-    public List<ProtocolFrame> SendProtocolFrameList = new ();
-    public ProtocolFrame ProtocolFrame = new();
+    private string _paramData = string.Empty;
+    private string _portStatusLed = "red";
     
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        ReceivedProtocolFrameList.Add(new ProtocolFrame());
-        ReceivedProtocolFrameList.Add(new ProtocolFrame
+        CommandCommunicationService.ReceivedProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.ReceivedProtocolFrameList.Add(new ProtocolFrame
         {
             Command = ProtocolCommand.SendStateIdCmd,
             ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
         });
-        ReceivedProtocolFrameList.Add(new ProtocolFrame());
-        SendProtocolFrameList.Add(new ProtocolFrame());
-        SendProtocolFrameList.Add(new ProtocolFrame());
-        SendProtocolFrameList.Add(new ProtocolFrame
+        CommandCommunicationService.ReceivedProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame
         {
             Command = ProtocolCommand.SendStateIdCmd,
             ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
         });
-        SendProtocolFrameList.Add(new ProtocolFrame
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame
         {
             Command = ProtocolCommand.SendStateIdCmd,
             ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
         });
-        SendProtocolFrameList.Add(new ProtocolFrame());
-        SendProtocolFrameList.Add(new ProtocolFrame());
-        SendProtocolFrameList.Add(new ProtocolFrame());
-        SendProtocolFrameList.Add(new ProtocolFrame());
-        SendProtocolFrameList.Add(new ProtocolFrame());
-        SendProtocolFrameList.Add(new ProtocolFrame());
-        SendProtocolFrameList.Add(new ProtocolFrame());
-        SendProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
+        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
+    }
+    
+    
+    private void SendProtocolFrame()
+    {
+        CommandCommunicationService.SendFrameData(ProtocolFrame);
     }
 
+    private void ToggleSerialPort()
+    {
+        if (CommandCommunicationService.IsPortOpen)
+        {
+            CommandCommunicationService.ClosePort();
+        }
+        else
+        {
+            CommandCommunicationService.OpenPort();
+        }
+        UpdatePortStatusLed();
+    }
+
+    private void UpdatePortStatusLed()
+    {
+        _portStatusLed = CommandCommunicationService.IsPortOpen ? "green" : "red";
+    }
 }

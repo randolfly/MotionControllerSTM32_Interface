@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MotionInterface.Lib.Service;
 
 namespace MotionInterface;
 
@@ -24,6 +25,7 @@ public partial class MainWindow : Window
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddWpfBlazorWebView();
         serviceCollection.AddMasaBlazor();
+        serviceCollection.AddSingleton<CommandCommunicationService>();
 
 #if DEBUG
         serviceCollection.AddBlazorWebViewDeveloperTools();

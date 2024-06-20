@@ -1,0 +1,54 @@
+﻿@using System.IO.Ports
+@using MotionInterface.Lib.Service
+<MCard Flat>
+    <MCardText>
+        <MContainer>
+            <MRow>
+                <MCol Cols="12">
+                    <MSelect @bind-Value="SerialPort.PortName"
+                             Items="SerialPort.GetPortNames()"
+                             Dense
+                             HideSelected
+                             ItemText="u => u"
+                             ItemValue="u => u"
+                             Label="ComPort">
+                    </MSelect>
+                </MCol>
+                <MCol Cols="12">
+                    <MTextField Type="number" @bind-Value="SerialPort.BaudRate" Label="BaudRate" TValue="int">
+                    </MTextField>
+                </MCol>
+                <MCol Cols="12">
+                    <MTextField Type="number" TValue="int" @bind-Value="SerialPort.DataBits" 
+                                Label="Limit Input" NumberProps="@(prop => { prop.Min = 6; prop.Max = 8; prop.Step = 1; })">
+                    </MTextField>
+                </MCol>
+                <MCol Cols="12">
+                    <MSelect @bind-Value="SerialPort.StopBits"
+                             Items="Enum.GetValues<StopBits>().Cast<StopBits>().ToList()"
+                             Dense 
+                             HideSelected
+                             ItemText="u => u.ToString()"
+                             ItemValue="u => u"
+                             Label="StopBits">
+                    </MSelect>
+                </MCol>
+                <MCol Cols="12">
+                    <MSelect @bind-Value="SerialPort.Parity"
+                             Items="Enum.GetValues<Parity>().Cast<Parity>().ToList()"
+                             Dense
+                             HideSelected
+                             ItemText="u => u.ToString()"
+                             ItemValue="u => u"
+                             Label="StopBits">
+                    </MSelect>
+                </MCol>
+            </MRow>
+        </MContainer>
+    </MCardText>
+</MCard>
+
+@code {
+    [Parameter]
+    public required SerialPort SerialPort { get; set; }
+}

@@ -61,4 +61,25 @@ public static class ByteOperator
         }
         return sb.ToString();
     }
+
+    public static float[] ToFloatArray(this byte[] data)
+    {
+        // 4bit - float
+        var floatArray = new float[data.Length / 4];
+        for (var i = 0; i < data.Length; i += 4)
+        {
+            floatArray[i / 4] = BitConverter.ToSingle(data, i);
+        }
+        return floatArray;
+    }
+    
+    public static byte[] ToByteArray(this float[] data)
+    {
+        var byteArray = new byte[data.Length * 4];
+        for (var i = 0; i < data.Length; i++)
+        {
+            BitConverter.GetBytes(data[i]).CopyTo(byteArray, i * 4);
+        }
+        return byteArray;
+    }
 }
