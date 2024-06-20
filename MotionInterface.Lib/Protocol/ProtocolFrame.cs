@@ -41,7 +41,7 @@ public class ProtocolFrame
     }
 
     /// <summary>
-    /// eserialize frame struct from specified data array, the checksum will not be calculated
+    /// serialize frame struct from specified data array, the checksum will not be calculated
     /// </summary>
     /// <param name="data">data array destination</param>
     /// <param name="offset">data array start offset</param> 

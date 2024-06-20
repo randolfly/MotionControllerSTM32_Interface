@@ -6,7 +6,7 @@ namespace MotionInterface.Lib.Protocol;
 
 public class ProtocolParser
 {
-    public ProtocolFrame ProtocolFrame = new ();
+    public readonly ProtocolFrame ProtocolFrame = new ();
 
     public byte[] RecursiveBuffer = new byte[ProtocolRecursiveBufferSize];
     public ushort ReadOffset;
@@ -22,7 +22,7 @@ public class ProtocolParser
     /// <summary>
     /// write the data into the ring buffer
     /// </summary>
-    /// <param name="data">target data</param>
+    /// <param name="data">target data to receive</param>
     /// <param name="receiveLen">receive data length</param>
     public void ProtocolDataReceive(ref byte[] data, ushort receiveLen)
     {
@@ -53,12 +53,19 @@ public class ProtocolParser
                 Console.WriteLine("SendVelPidCmd\n");
                 break;
             case SendPosPidCmd:
+                break;
             case SendStateIdCmd:
+                break;
             case SetVelPidCmd:
+                break;
             case SetPosPidCmd:
+                break;
             case StartSystemCmd:
+                break;
             case StopSystemCmd:
+                break;
             case ResetSystemCmd:
+                break;
             default:
                 Console.WriteLine("NotMatchCommand\n");
                 return -1;
@@ -67,7 +74,7 @@ public class ProtocolParser
     }
 
 
-    public ProtocolCommand ProtocolFrameParse(ref byte[] data, ref ushort dataLen)
+    private ProtocolCommand ProtocolFrameParse(ref byte[] data, ref ushort dataLen)
     {
         var cmd = NullCmd;
         ProtocolFrame.Command = cmd;
@@ -167,8 +174,8 @@ public class ProtocolParser
             }
 
             dataLen = FrameLen;
-            cmd = (ProtocolCommand)GetFrameCmd(RecursiveBuffer, ReadOffset);
-            ProtocolFrame.DeserializeFrameData(ref RecursiveBuffer, ReadOffset);
+            cmd = (ProtocolCommand)GetFrameCmd(data, 0);
+            ProtocolFrame.DeserializeFrameData(ref data, 0);
             ReadOffset = (ushort)((ReadOffset + FrameLen) % ProtocolRecursiveBufferSize);
         }
         else

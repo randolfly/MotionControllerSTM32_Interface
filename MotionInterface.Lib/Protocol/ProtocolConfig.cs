@@ -2,7 +2,7 @@
 
 public static class ProtocolConfig
 {
-    public const ushort ProtocolRecursiveBufferSize = 256;
+    public const ushort ProtocolRecursiveBufferSize = 32768;
     public const ushort ProtocolFrameChecksumSize = 1;
     public const ushort ProtocolFrameHeaderSize = 9;
 
@@ -14,7 +14,8 @@ public static class ProtocolConfig
 
 public enum ProtocolFrameHeader : uint
 {
-    NormalHeader = 0x0d000721u
+    NormalHeader = 0x0d000721u,
+    TestInvalidHeader = 0x23332333
 }
 
 public enum MotorId : byte
