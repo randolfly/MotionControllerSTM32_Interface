@@ -26,6 +26,8 @@ public partial class MainWindow : Window
         serviceCollection.AddWpfBlazorWebView();
         serviceCollection.AddMasaBlazor();
         serviceCollection.AddSingleton<CommandCommunicationService>();
+        serviceCollection.AddSingleton<DataCommunicationService>();
+        serviceCollection.AddSingleton<DataLogService>();
 
 #if DEBUG
         serviceCollection.AddBlazorWebViewDeveloperTools();

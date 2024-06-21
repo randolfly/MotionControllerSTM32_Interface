@@ -52,12 +52,12 @@
     </MRow>
     <MRow NoGutters Style="margin-top: 10px;">
         <MCol Cols="3" Style="display: flex;justify-content:space-around">
-            <MButton Color="indigo" OnClick="CommandCommunicationService.GetAvailableRecordDataNames">
+            <MButton Color="indigo" OnClick="GetAvailableRecordDataNames">
                 GetAvailable
             </MButton>
         </MCol>
         <MCol Cols="3" Style="display: flex;justify-content:space-around">
-            <MButton Color="indigo" OnClick="CommandCommunicationService.SetRecordDataNames">
+            <MButton Color="indigo" OnClick="SetRecordDataNames">
                 SetRecord
             </MButton>
         </MCol>
@@ -108,8 +108,37 @@
             .Select(sn=>sn.ToString()).ToList()!;
     }
 
+    private void SetRecordDataNames()
+    {
+        if (CommandCommunicationService.IsPortOpen)
+        {
+            CommandCommunicationService.SetRecordDataNames();
+        }
+        else
+        {
+            PopupService.EnqueueSnackbarAsync("Please check if serial port is opened");
+        }
+    }
+
+    private void GetAvailableRecordDataNames()
+    {
+        if (CommandCommunicationService.IsPortOpen)
+        {
+            CommandCommunicationService.GetAvailableRecordDataNames();
+        }
+        else
+        {
+            PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
+        }
+    }
+
     private void StartRecordData()
     {
+        if (!CommandCommunicationService.IsPortOpen)
+        {
+            PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
+            return;
+        }
         // check echo record names right
         var recordName = CommandCommunicationService.RecordSymbolName;
         var echoName = CommandCommunicationService.EchoRecordSymbolName;
@@ -146,6 +175,11 @@
 
     private void StopRecordData()
     {
+        if (!CommandCommunicationService.IsPortOpen)
+        {
+            PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
+            return;
+        }
         CommandCommunicationService.StopRecordData();
         DataLogService.StopDataLog();
         
