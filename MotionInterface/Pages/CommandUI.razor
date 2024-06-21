@@ -1,109 +1,99 @@
 ﻿@page "/CommandUI"
 @using MotionInterface.Lib.Model
 @using MotionInterface.Lib.Service
+@using MotionInterface.Lib.Util
 
 <MContainer Fluid Class="fill-height">
-    <MRow Style="min-height:200px"> 
-        <MCol Cols="12" Sm="6">
-            <MCard Class="fill-height">
-                <MCardTitle>Receive Frames</MCardTitle>
-                <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
-                                Items="CommandCommunicationService.ReceivedProtocolFrameList">
-                    <ItemContent>
-                        <MListItem>
-                            <CommandFrame ProtocolFrame="@context"></CommandFrame>
-                        </MListItem>
-                    </ItemContent>
-                </MVirtualScroll>
-            </MCard>
-        </MCol>
-        <MCol Cols="12" Sm="6">
-            <MCard Class="fill-height">
-                <MCardTitle>Send Frames</MCardTitle>
-                <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
-                                Items="CommandCommunicationService.SendProtocolFrameList">
-                    <ItemContent>
-                        <MListItem>
-                            <CommandFrame ProtocolFrame="@context"></CommandFrame>
-                        </MListItem>
-                    </ItemContent>
-                </MVirtualScroll>
-            </MCard>
-        </MCol>
-    </MRow>
-    
-    <MRow NoGutters Style="margin-top: 10px;">
-        <MCol Cols="1" Style="display: flex;justify-content:space-around">
-            <MButton Icon Color="@_portStatusLed"
-                     OnClick="ToggleSerialPort">
-                <MIcon>mdi-power</MIcon>
-            </MButton>
-        </MCol>
-        <MCol Cols="4" Align="AlignTypes.Start">
-            <MAutocomplete @bind-Value="ProtocolFrame.Command"
-                           Items="Enum.GetValues(typeof(ProtocolCommand))
-                         .Cast<ProtocolCommand>().ToList()"
-                           ItemText="r=>r.ToString()"
-                           ItemValue="r=>r"
-                           Dense Solo
-                           HideNoData
-                           HideSelected
-                           Placeholder="Start typing to Search"
-                           Label="Command"></MAutocomplete>
-        </MCol>
-        <MCol Align="AlignTypes.Start">
-            <MAutocomplete @bind-Value="ProtocolFrame.ParamData"
-                           Items="Enum.GetValues(typeof(ProtocolCommand))
-                         .Cast<ProtocolCommand>().ToList()"
-                           ItemText="r=>r.ToString()"
-                           ItemValue="r=>r"
-                           Dense Solo
-                           HideNoData
-                           HideSelected
-                           Placeholder="Start typing to Search"
-                           Label="Command"></MAutocomplete>
-        </MCol>
-        <MCol Cols="1" Style="display: flex;justify-content:space-around">
-            <MButton Icon Color="indigo" 
-                     OnClick="SendProtocolFrame">
-                <MIcon>mdi-send</MIcon>
-            </MButton>
-        </MCol>
-        
-    </MRow>
+<MRow Style="min-height:200px">
+    <MCol Cols="12" Sm="6">
+        <MCard Class="fill-height">
+            <MCardTitle>Receive Frames</MCardTitle>
+            <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
+                Items="CommandCommunicationService.ReceivedProtocolFrameList">
+                <ItemContent>
+                    <MListItem>
+                        <CommandFrame ProtocolFrame="@context"></CommandFrame>
+                    </MListItem>
+                </ItemContent>
+            </MVirtualScroll>
+        </MCard>
+    </MCol>
+    <MCol Cols="12" Sm="6">
+        <MCard Class="fill-height">
+            <MCardTitle>Send Frames</MCardTitle>
+            <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
+                Items="CommandCommunicationService.SendProtocolFrameList">
+                <ItemContent>
+                    <MListItem>
+                        <CommandFrame ProtocolFrame="@context"></CommandFrame>
+                    </MListItem>
+                </ItemContent>
+            </MVirtualScroll>
+        </MCard>
+    </MCol>
+</MRow>
+
+<MRow NoGutters Style="margin-top: 10px;">
+    <MCol Cols="1" Style="display: flex;justify-content:space-around">
+        <MButton Icon Color="@_portStatusLed" OnClick="ToggleSerialPort">
+            <MIcon>mdi-power</MIcon>
+        </MButton>
+    </MCol>
+    <MCol Cols="4" Align="AlignTypes.Start">
+        <MAutocomplete @bind-Value="ProtocolFrame.Command" Items="Enum.GetValues(typeof(ProtocolCommand))
+                         .Cast<ProtocolCommand>().ToList()" ItemText="r=>r.ToString()" ItemValue="r=>r" Dense Solo
+            HideNoData HideSelected Placeholder="Start typing to Search" Label="Command"></MAutocomplete>
+    </MCol>
+    <MCol Align="AlignTypes.Start">
+        <MAutocomplete @bind-Value="ProtocolFrame.ParamData" Items="Enum.GetValues(typeof(ProtocolCommand))
+                         .Cast<ProtocolCommand>().ToList()" ItemText="r=>r.ToString()" ItemValue="r=>r" Dense Solo
+            HideNoData HideSelected Placeholder="Start typing to Search" Label="Command"></MAutocomplete>
+    </MCol>
+    <MCol Cols="1" Style="display: flex;justify-content:space-around">
+        <MButton Icon Color="indigo" OnClick="SendProtocolFrame">
+            <MIcon>mdi-send</MIcon>
+        </MButton>
+    </MCol>
+
+</MRow>
 </MContainer>
 
 
 @code {
     private ProtocolFrame ProtocolFrame { get; set; } = new();
-    [Inject] 
+    [Inject]
     private CommandCommunicationService CommandCommunicationService { get; set; } = default!;
 
-    private string _paramData = string.Empty;
+    private string ParamData
+    {
+        get => ProtocolFrame.ParamData.ToFloatString();
+        set => ProtocolFrame.ParamData = value.ToByteArray();
+    }
+
     private string _portStatusLed = "red";
-    
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
         CommandCommunicationService.ReceivedProtocolFrameList.Add(new ProtocolFrame());
         CommandCommunicationService.ReceivedProtocolFrameList.Add(new ProtocolFrame
-        {
-            Command = ProtocolCommand.SendStateIdCmd,
-            ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
-        });
+            {
+                Command = ProtocolCommand.SendStateIdCmd,
+                ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
+            });
         CommandCommunicationService.ReceivedProtocolFrameList.Add(new ProtocolFrame());
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame
-        {
-            Command = ProtocolCommand.SendStateIdCmd,
-            ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
-        });
+            {
+                Command = ProtocolCommand.SendStateIdCmd,
+                ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
+            });
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame
-        {
-            Command = ProtocolCommand.SendStateIdCmd,
-            ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
-        });
+            {
+                Command = ProtocolCommand.SendStateIdCmd,
+                ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
+            });
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
@@ -113,8 +103,8 @@
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
     }
-    
-    
+
+
     private void SendProtocolFrame()
     {
         CommandCommunicationService.SendFrameData(ProtocolFrame);
