@@ -2,49 +2,133 @@
 @using MotionInterface.Lib.Model
 @using MotionInterface.Lib.Service
 @using MotionInterface.Lib.Util
+@using MotionInterface.Util
 
+@inject IPopupService PopupService
 @inject CommandCommunicationService CommandCommunicationService
+@inject DataLogService DataLogService
 
 <MContainer Fluid Class="fill-height">
     <MRow Style="min-height:200px">
-        <MCol Cols="12" Sm="6">
-            <MCard Class="fill-height">
-                <MCardTitle>Receive Frames</MCardTitle>
-                <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
-                                Items="CommandCommunicationService.ReceivedProtocolFrameList">
-                    <ItemContent>
-                        <MListItem>
-                            <CommandFrame ProtocolFrame="@context"></CommandFrame>
+        <MCol Cols="12" Md="6">
+            <MCard Class="mx-auto">
+                <MList Dense>
+                    <MListItemGroup
+                        @bind-Values="RecordSymbolName"
+                        Multiple
+                        Color="indigo">
+                        @foreach (var symbol in CommandCommunicationService.AvailableSymbolName)
+                        {
+                        <MListItem @key="symbol" Value="symbol">
+                            <MListItemContent>
+                                <MListItemTitle>@symbol</MListItemTitle>
+                            </MListItemContent>
                         </MListItem>
-                    </ItemContent>
-                </MVirtualScroll>
+                        }
+                    </MListItemGroup>
+                </MList>
             </MCard>
         </MCol>
-        <MCol Cols="12" Sm="6">
-            <MCard Class="fill-height">
-                <MCardTitle>Send Frames</MCardTitle>
-                <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
-                                Items="CommandCommunicationService.SendProtocolFrameList">
-                    <ItemContent>
-                        <MListItem>
-                            <CommandFrame ProtocolFrame="@context"></CommandFrame>
+        <MCol Cols="12" Md="6">
+            <MCard Class="mx-auto">
+                <MList Dense>
+                    <MListItemGroup
+                        @bind-Values="GraphSymbolName"
+                        Multiple
+                        Color="indigo">
+                        @foreach (var symbol in RecordSymbolName)
+                        {
+                        <MListItem @key="symbol" Value="symbol">
+                            <MListItemContent>
+                                <MListItemTitle>@symbol</MListItemTitle>
+                            </MListItemContent>
                         </MListItem>
-                    </ItemContent>
-                </MVirtualScroll>
+                        }
+                    </MListItemGroup>
+                </MList>
             </MCard>
         </MCol>
     </MRow>
-
     <MRow NoGutters Style="margin-top: 10px;">
-        <MCol Cols="1" Style="display: flex;justify-content:space-around">
-            <MButton Icon Color="indigo">
-                <MIcon>mdi-send</MIcon>
+        <MCol Cols="3" Style="display: flex;justify-content:space-around">
+            <MButton Color="indigo" OnClick="CommandCommunicationService.GetAvailableRecordDataNames">
+                GetAvailable
             </MButton>
         </MCol>
-
+        <MCol Cols="3" Style="display: flex;justify-content:space-around">
+            <MButton Color="indigo" OnClick="CommandCommunicationService.SetRecordDataNames">
+                SetRecord
+            </MButton>
+        </MCol>
+        <MCol Cols="3" Style="display: flex;justify-content:space-around">
+            <MButton Color="indigo" OnClick="StartRecordData">
+                StartRecord
+            </MButton>
+        </MCol>
+        <MCol Cols="3" Style="display: flex;justify-content:space-around">
+            <MButton Color="indigo" OnClick="StopRecordData">
+                StopRecord
+            </MButton>
+        </MCol>
     </MRow>
 </MContainer>
 
 @code {
+    private List<StringNumber> RecordSymbolName
+    {
+        get => CommandCommunicationService.RecordSymbolName.ToStringNumber();
+        set => OnRecordSymbolChanged(value);
+    }
     
+    private void OnRecordSymbolChanged(List<StringNumber> symbolInfoPaths)
+    {
+        CommandCommunicationService.RecordSymbolName = symbolInfoPaths
+            .Select(sn=>sn.ToString()).ToList()!;
+    }
+    
+    private List<StringNumber> GraphSymbolName
+    {
+        get => CommandCommunicationService.GraphSymbolName.ToStringNumber();
+        set => OnGraphSymbolChanged(value);
+    }
+    
+    private void OnGraphSymbolChanged(List<StringNumber> symbolInfoPaths)
+    {
+        CommandCommunicationService.GraphSymbolName = symbolInfoPaths
+            .Select(sn=>sn.ToString()).ToList()!;
+    }
+
+    private void StartRecordData()
+    {
+        // check echo record names right
+        var recordName = CommandCommunicationService.RecordSymbolName;
+        var echoName = CommandCommunicationService.EchoRecordSymbolName;
+        var checkPass = false;
+        if (recordName.Count == echoName.Count)
+        {
+            for (var i = recordName.Count - 1; i >= 0; i--)
+            {
+                if (echoName[i] == recordName[i]) continue;
+                checkPass = false;
+                break;
+            }
+        }
+
+        if (checkPass)
+        {
+            CommandCommunicationService.StartRecordData();
+            DataLogService.StartDataLog();
+        }
+        else
+        {
+            PopupService.EnqueueSnackbarAsync("Record and Echo Names not same");   
+        }
+    }
+
+    private void StopRecordData()
+    {
+        CommandCommunicationService.StopRecordData();
+        DataLogService.StopDataLog();
+    }
+
 }

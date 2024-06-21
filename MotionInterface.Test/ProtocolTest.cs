@@ -11,7 +11,7 @@ public class ProtocolTest
     private ProtocolFrame ProtocolFrame { get; set; } = new();
     private ProtocolParserService ProtocolParserService { get; set; } = new();
     private byte[] _protocolFrameDataPool = new byte[ProtocolConfig.ProtocolRecursiveBufferSize];
-    private int _frameParseResult = (int)ProtocolCommand.NullCmd;
+    private ProtocolCommand _frameParseResult = ProtocolCommand.NullCmd;
     
     public ProtocolTest(ITestOutputHelper testOutputHelper)
     {
@@ -80,7 +80,7 @@ public class ProtocolTest
         CheckParseResult(protocolFrame2);
         CheckParseResult(protocolFrame4, protocolFrame3.Length);
         _frameParseResult = ProtocolParserService.ProtocolDataHandler();
-        Assert.True(_frameParseResult == (int)ProtocolCommand.NullCmd);
+        Assert.True(_frameParseResult == ProtocolCommand.NullCmd);
         WriteFrameBuffer(protocolFrame1);
         WriteFrameBuffer(protocolFrame2);
         CheckParseResult(protocolFrame1);
@@ -125,7 +125,7 @@ public class ProtocolTest
         // or the readOffset may equal to writeOffset, the corner case is not easy to handle
         preReadOffset += ProtocolParserService.ReadOffset;
         _frameParseResult = ProtocolParserService.ProtocolDataHandler();
-        Assert.True(_frameParseResult == (int)protocolFrame.Command);
+        Assert.True(_frameParseResult == protocolFrame.Command);
         Assert.False(ProtocolParserService.FoundFrameHead);
         Assert.True((ProtocolParserService.ReadOffset%ProtocolConfig.ProtocolRecursiveBufferSize) == (ProtocolFrame.Length + preReadOffset)%ProtocolConfig.ProtocolRecursiveBufferSize);
         var testFrame = ProtocolParserService.ProtocolFrame;

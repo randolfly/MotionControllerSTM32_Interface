@@ -85,26 +85,48 @@ public static class ByteOperator
         return byteArray;
     }
 
-    public static string ToFloatString(this byte[] data, char seperator = ',')
+    public static string ToFloatString(this byte[] data, char separator = ',')
     {
         var floatArray = data.ToFloatArray();
-        return floatArray.ToFloatString(seperator);
+        return floatArray.ToFloatString(separator);
     }
 
-    public static byte[] ToByteArray(this string rawCommand, char seperator = ',')
+    public static byte[] ToByteArray(this string rawCommand, char separator = ',')
     {
-        var floatArray = ToFloatArray(rawCommand, seperator);
+        var floatArray = ToFloatArray(rawCommand, separator);
         return floatArray.ToByteArray();
     }
 
-    public static string ToFloatString(this float[] data, char seperator = ',') {
-        return string.Join(seperator, data);
+    public static string ToFloatString(this float[] data, char separator = ',') {
+        return string.Join(separator, data);
     }
 
-    public static float[] ToFloatArray(this string rawCommand, char seperator = ',') {
-        var stringArray = rawCommand.Trim().Split(seperator);
+    public static float[] ToFloatArray(this string rawCommand, char separator = ',') {
+        var stringArray = rawCommand.Trim().Split(separator);
         var floatArray = stringArray.Select(float.Parse).ToArray();
         return floatArray;
     }
 
+    /// <summary>
+    /// convert name string list to byte array, such as ["kp", "ki", "kd"] => "kp, ki, kd" => [0x11,0x22,...]
+    /// </summary>
+    /// <param name="nameString">string that contains param names</param>
+    /// <param name="separator">string separator</param>
+    /// <returns>byte array</returns>
+    public static byte[] NameStringToByteArray(this List<string> nameString, char separator = ',')
+    {
+        return new byte[1];
+    }
+    
+    /// <summary>
+    /// convert byte array to name string list, such as [0x11,0x22,...] => "kp, ki, kd" => ["kp", "ki", "kd"]
+    /// </summary>
+    /// <param name="byteArray">byte array that encodes param names</param>
+    /// <param name="separator">string separator</param>
+    /// <returns>name string</returns>
+    public static List<string> ByteArrayToNameString(this byte[] byteArray, char separator = ',')
+    {
+        return new List<string>();
+    }
+   
 }

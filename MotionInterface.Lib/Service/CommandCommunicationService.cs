@@ -11,8 +11,14 @@ public class CommandCommunicationService
     public readonly List<ProtocolFrame> SendProtocolFrameList = new ();
     public ProtocolFrame ProtocolFrame = new();
     
-    private readonly ProtocolParserService ProtocolParserService = new();
+    private readonly ProtocolParserService _protocolParserService = new();
     private readonly PeriodicActionTimer _periodicActionTimer;
+    
+    public List<string> AvailableSymbolName { get; set; } = new();
+    public List<string> RecordSymbolName { get; set; } = new();
+    public List<string> EchoRecordSymbolName { get; set; } = new();
+
+    public List<string> GraphSymbolName { get; set; } = new();
     
     public CommandCommunicationService()
     {
@@ -29,7 +35,7 @@ public class CommandCommunicationService
 
     public void SendFrameData(ProtocolFrame protocolFrame)
     {
-        var data = new byte[ProtocolConfig.ProtocolRecursiveBufferSize];
+        var data = new byte[ProtocolConfig.ProtocolFrameMaxSize];
         protocolFrame.SerializeFrameData(ref data);
         SerialPort.Write(data, 0, protocolFrame.Length);
         SendProtocolFrameList.Add(protocolFrame);
@@ -45,15 +51,29 @@ public class CommandCommunicationService
         if (dataReceived <= 0) return;
         var data = new byte[dataReceived];
         SerialPort.Read(data, 0, dataReceived);
-        ProtocolParserService.ProtocolDataReceive(ref data, (ushort)dataReceived);
+        _protocolParserService.ProtocolDataReceive(ref data, (ushort)dataReceived);
     }
     private void ParseReceivedFrames()
     {
-        ProtocolParserService.ProtocolDataHandler();
-        if (ProtocolParserService.ProtocolFrame?.Command == ProtocolCommand.NullCmd) return;
-        if (ProtocolParserService.ProtocolFrame == null) return;
-        ProtocolFrame = ProtocolParserService.ProtocolFrame;
-        ReceivedProtocolFrameList.Add(ProtocolParserService.ProtocolFrame);
+        _protocolParserService.ProtocolDataHandler();
+        if (_protocolParserService.ProtocolFrame?.Command == ProtocolCommand.NullCmd) return;
+        if (_protocolParserService.ProtocolFrame == null) return;
+        ProtocolFrame = _protocolParserService.ProtocolFrame;
+        ReceivedProtocolFrameList.Add(_protocolParserService.ProtocolFrame);
+        switch (ProtocolFrame.Command)
+        {
+            case ProtocolCommand.DataLogSendAvailableDataCmd:
+            {
+                AvailableSymbolName = ProtocolFrame.ParamData.ByteArrayToNameString();
+                break;
+            }
+            case ProtocolCommand.DataLogEchoLogDataCmd:
+            {
+                EchoRecordSymbolName = ProtocolFrame.ParamData.ByteArrayToNameString();
+                break;
+            }
+        }
+       
         OnParseFrameDataAction?.Invoke(ProtocolFrame);
     }
 
@@ -61,6 +81,42 @@ public class CommandCommunicationService
 
     #region util functions
 
+    public void GetAvailableRecordDataNames()
+    {
+        var checkAvailableDataFrame = new ProtocolFrame
+        {
+            Command = ProtocolCommand.DataLogCheckAvailableDataCmd,
+        };
+        SendFrameData(checkAvailableDataFrame);
+    }
+
+    public void SetRecordDataNames()
+    {
+        var setRecordDataFrame = new ProtocolFrame
+        {
+            Command = ProtocolCommand.DataLogSetLogDataCmd,
+            ParamData = RecordSymbolName.NameStringToByteArray()
+        };
+        SendFrameData(setRecordDataFrame);
+    }
+
+    public void StartRecordData()
+    {
+        var startRecordDataFrame = new ProtocolFrame
+        {
+            Command = ProtocolCommand.DataLogStartLogCmd,
+        };
+        SendFrameData(startRecordDataFrame);
+    }
+    
+    public void StopRecordData()
+    {
+        var stopRecordDataFrame = new ProtocolFrame
+        {
+            Command = ProtocolCommand.DataLogStopLogCmd,
+        };
+        SendFrameData(stopRecordDataFrame);
+    }
    
     public void OpenPort()
     {
@@ -97,7 +153,6 @@ public class CommandCommunicationService
     }
 
     #endregion
-    
     
     
 }

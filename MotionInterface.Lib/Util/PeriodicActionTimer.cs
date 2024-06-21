@@ -6,7 +6,7 @@ namespace MotionInterface.Lib.Util;
 public class PeriodicActionTimer
 {
     private Timer? _timer;
-    private int TimeInterval { get; set; } = 5000;
+    public int TimeInterval { get; set; } = 5000;
     private Action TimerAction { get; set; }
 
     public PeriodicActionTimer(Action timerAction, int timeInterval=5000)

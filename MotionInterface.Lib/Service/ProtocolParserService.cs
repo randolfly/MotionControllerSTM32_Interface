@@ -9,6 +9,7 @@ public class ProtocolParserService
 {
     public readonly ProtocolFrame ProtocolFrame = new ();
 
+    // todo: should be separate to better test and run
     public readonly byte[] RecursiveBuffer = new byte[ProtocolRecursiveBufferSize];
     public ushort ReadOffset;
     public ushort WriteOffset;
@@ -17,7 +18,6 @@ public class ProtocolParserService
 
     public ProtocolParserService()
     {
-        
     }
 
     /// <summary>
@@ -38,40 +38,14 @@ public class ProtocolParserService
         WriteOffset = (ushort)((WriteOffset + receiveLen) % ProtocolRecursiveBufferSize);
     }
 
-    public int ProtocolDataHandler()
+    public ProtocolCommand ProtocolDataHandler()
     {
-        var frameData = new byte[ProtocolRecursiveBufferSize];
+        var frameData = new byte[ProtocolFrameMaxSize];
         ushort frameLen = 0;
         var cmdType = NullCmd;
 
         cmdType = ProtocolFrameParse(ref frameData, ref frameLen);
-        switch (cmdType)
-        {
-            case NullCmd: 
-                Console.WriteLine("NullCmd\n");
-                break;
-            case SendVelPidCmd:
-                Console.WriteLine("SendVelPidCmd\n");
-                break;
-            case SendPosPidCmd:
-                break;
-            case SendStateIdCmd:
-                break;
-            case SetVelPidCmd:
-                break;
-            case SetPosPidCmd:
-                break;
-            case StartSystemCmd:
-                break;
-            case StopSystemCmd:
-                break;
-            case ResetSystemCmd:
-                break;
-            default:
-                Console.WriteLine("NotMatchCommand\n");
-                return -1;
-        }
-        return (int)cmdType;
+        return cmdType;
     }
 
 
@@ -250,7 +224,21 @@ public class ProtocolParserService
 
         return frameLen > unparsedFrameLen ? (ushort)0 : unparsedFrameLen;
     }
-    
+
+    public ushort GetRemainLength()
+    {
+        ushort remainLength;
+        if (WriteOffset >= ReadOffset)
+        {
+            remainLength = (ushort)(WriteOffset - ReadOffset);
+        }
+        else
+        {
+            remainLength = (ushort)(RecursiveBuffer.Length - ReadOffset + WriteOffset);
+        }
+
+        return remainLength;
+    }
     
     /// <summary>
     /// find frame header in the buffer
