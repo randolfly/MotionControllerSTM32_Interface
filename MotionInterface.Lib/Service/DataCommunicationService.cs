@@ -6,7 +6,7 @@ namespace MotionInterface.Lib.Service;
 
 public class DataCommunicationService
 {
-    private readonly SerialPort _serialPort = new();
+    public readonly SerialPort SerialPort = new();
     private ProtocolFrame _protocolFrame = new();
     
     private readonly ProtocolParserService _protocolParserService = new();
@@ -15,12 +15,12 @@ public class DataCommunicationService
     
     public DataCommunicationService()
     {
-        _serialPort.DataReceived += PortDataReceived;
+        SerialPort.DataReceived += PortDataReceived;
         // 10ms read once, and clear all data
         _periodicActionTimer = new PeriodicActionTimer(ParseReceivedFrames, 10);
     }
 
-    public bool IsPortOpen => _serialPort.IsOpen;
+    public bool IsPortOpen => SerialPort.IsOpen;
     
     // extended action for the parsed frame data event
     public Action? OnParseFrameDataAction { get; set; }
@@ -31,7 +31,7 @@ public class DataCommunicationService
     {
         var data = new byte[ProtocolConfig.ProtocolFrameMaxSize];
         protocolFrame.SerializeFrameData(ref data);
-        _serialPort.Write(data, 0, protocolFrame.Length);
+        SerialPort.Write(data, 0, protocolFrame.Length);
     }
     
     #endregion
@@ -48,7 +48,7 @@ public class DataCommunicationService
         var dataReceived = ((SerialPort)sender).BytesToRead;
         if (dataReceived <= 0) return;
         var data = new byte[dataReceived];
-        _serialPort.Read(data, 0, dataReceived);
+        SerialPort.Read(data, 0, dataReceived);
         _protocolParserService.ProtocolDataReceive(ref data, (ushort)dataReceived);
     }
     
@@ -78,7 +78,7 @@ public class DataCommunicationService
         try
         {
             if (IsPortOpen) return;
-            _serialPort.Open();
+            SerialPort.Open();
             _periodicActionTimer.StartTimer();
         }
         catch (Exception e)
@@ -92,7 +92,7 @@ public class DataCommunicationService
         try
         {
             if (!IsPortOpen) return;
-            _serialPort.Close();
+            SerialPort.Close();
             _periodicActionTimer.StopTimer();
         }
         catch (Exception e)
@@ -104,7 +104,7 @@ public class DataCommunicationService
     public void SetReceiveBytesThreshold(int threshold)
     {
         // default is 1
-        _serialPort.ReceivedBytesThreshold = threshold;
+        SerialPort.ReceivedBytesThreshold = threshold;
     }
 
     #endregion

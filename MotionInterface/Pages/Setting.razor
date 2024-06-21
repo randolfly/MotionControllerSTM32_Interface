@@ -14,6 +14,8 @@
     <MCol Cols="4">
         <MCard>
             <MCardTitle>LogPort Config</MCardTitle>
+            <SerialPortConfig SerialPort="DataCommunicationService.SerialPort"></SerialPortConfig>
+
         </MCard>
     </MCol>
 </MRow>
@@ -22,5 +24,6 @@
 @code {
     [Inject] 
     private CommandCommunicationService CommandCommunicationService { get; set; } = default!;
-
+    [Inject] 
+    private DataCommunicationService DataCommunicationService { get; set; } = default!;
 }

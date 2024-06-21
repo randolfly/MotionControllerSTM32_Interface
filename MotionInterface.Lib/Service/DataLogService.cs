@@ -42,7 +42,6 @@ public class DataLogService
         PeriodicActionTimer.StopTimer();
     }
     
-    
     private void UpdateRecordData()
     {
         var startId = RecordData.Count;
