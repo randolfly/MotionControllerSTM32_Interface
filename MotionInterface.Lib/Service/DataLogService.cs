@@ -20,7 +20,7 @@ public class DataLogService
         PeriodicActionTimer = new PeriodicActionTimer(BackupCsvLog);
     }
 
-    private List<List<float>> RecordData { get; } = new();
+    public List<List<float>> RecordData { get; } = new();
     
     // todo: Add recurrent save file action
     public DataLogConfig DataLogConfig = new();
@@ -28,6 +28,9 @@ public class DataLogService
     public bool ExportCsvTempWithHeader { get; set; } = true;
     public int BackupLogStartId { get; set; } = 0;
     public int BackupLogEndId { get; set; }
+    
+    // extended action for the parsed frame data event
+    public Action<int>? OnParseFrameDataAction { get; set; }
 
     public void StartDataLog()
     {
@@ -49,6 +52,7 @@ public class DataLogService
         {
             RecordData.Add(receivedFrameData[i].ParamData.ToFloatArray().ToList());
         }
+        OnParseFrameDataAction?.Invoke(startId);
     }
     
     private async void BackupCsvLog()

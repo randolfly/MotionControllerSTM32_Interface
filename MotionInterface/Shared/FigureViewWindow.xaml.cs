@@ -72,16 +72,20 @@ public partial class FigureViewWindow : System.Windows.Window
         return $"{position * LogPeriod}";
     }
 
-    public void UpdateData(double data)
+    public void UpdateDataList(List<float> data)
+    {
+        data.ForEach(UpdateData);
+    }
+    
+    public void UpdateData(float data)
     {
         if (_nextDataIndex >= Maxlength)
         {
-            // throw new OverflowException("data array isn't long enough to accomodate new data");
+            // todo: throw new OverflowException("data array isn't long enough to accomodate new data");
             // clear all data and begin new figure
-
             _nextDataIndex = 0;
         }
-
+        
         LogData[_nextDataIndex] = data;
         SignalPlot.MaxRenderIndex = _nextDataIndex;
         if (_nextDataIndex > MaxRenderLength)

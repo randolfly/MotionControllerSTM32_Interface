@@ -38,6 +38,11 @@ public class DataCommunicationService
     
     #region ReceiveFrameData
 
+    /// <summary>
+    /// callback function of SerialPort receive data
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
     private void PortDataReceived(object sender, SerialDataReceivedEventArgs args)
     {
         var dataReceived = ((SerialPort)sender).BytesToRead;
@@ -46,6 +51,10 @@ public class DataCommunicationService
         _serialPort.Read(data, 0, dataReceived);
         _protocolParserService.ProtocolDataReceive(ref data, (ushort)dataReceived);
     }
+    
+    /// <summary>
+    /// PeriodicActionTimer callback, default 10ms /execution
+    /// </summary>
     private void ParseReceivedFrames()
     {
         while (_protocolParserService.GetRemainLength() >= ProtocolConfig.ProtocolFrameMaxSize)

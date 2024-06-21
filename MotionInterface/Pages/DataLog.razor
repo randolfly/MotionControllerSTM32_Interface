@@ -1,4 +1,5 @@
 ﻿@page "/DataLog"
+@using System.Windows
 @using MotionInterface.Lib.Model
 @using MotionInterface.Lib.Service
 @using MotionInterface.Lib.Util
@@ -74,6 +75,9 @@
 </MContainer>
 
 @code {
+    
+    private Dictionary<string, FigureViewWindow> FigureViewWindowDictionary { get; set; } = new();
+    
     private List<StringNumber> RecordSymbolName
     {
         get => CommandCommunicationService.RecordSymbolName.ToStringNumber();
@@ -91,7 +95,13 @@
         get => CommandCommunicationService.GraphSymbolName.ToStringNumber();
         set => OnGraphSymbolChanged(value);
     }
-    
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        DataLogService.OnParseFrameDataAction = UpdateGraphViewData;
+    }
+
     private void OnGraphSymbolChanged(List<StringNumber> symbolInfoPaths)
     {
         CommandCommunicationService.GraphSymbolName = symbolInfoPaths
@@ -113,11 +123,13 @@
                 break;
             }
         }
-
         if (checkPass)
         {
+            if (recordName.Count <= 0) return;
+            ClearRecordData();
             CommandCommunicationService.StartRecordData();
             DataLogService.StartDataLog();
+            ShowGraphView(CommandCommunicationService.GraphSymbolName);
         }
         else
         {
@@ -125,10 +137,70 @@
         }
     }
 
+    private void ClearRecordData()
+    {
+        RecordSymbolName.Clear();
+        FigureViewWindowDictionary.Values.ForEach(w => w.Close());
+        FigureViewWindowDictionary.Clear();
+    }
+
     private void StopRecordData()
     {
         CommandCommunicationService.StopRecordData();
         DataLogService.StopDataLog();
+        
+        foreach (var figureViewWindow in FigureViewWindowDictionary.Values)
+        {
+            figureViewWindow.ScaleRangeToMax();
+        }
+    }
+
+    private void UpdateGraphViewData(int startId)
+    {
+        var recordSymbolData = DataLogService.RecordData;
+        var endId = recordSymbolData.Count;
+        var recordSymbolList = CommandCommunicationService.RecordSymbolName;
+        var graphSymbolList = CommandCommunicationService.GraphSymbolName;
+        
+        var graphSymbolIndex = recordSymbolList.FindSubStringListIndex(graphSymbolList);
+        for (var graphSymbolId = 0;  graphSymbolId < graphSymbolList.Count; graphSymbolId++)
+        {
+            for (var numId = startId; numId < endId; numId++)
+            {
+                FigureViewWindowDictionary[graphSymbolList[graphSymbolId]]
+                    .UpdateData(recordSymbolData[numId][graphSymbolId]);
+            }
+        }
+    }
+
+    private void ShowGraphView(List<string> graphSymbolInfos)
+    {
+        foreach (var figureViewWindow in FigureViewWindowDictionary.Values)
+        {
+            figureViewWindow.CloseWindow();
+        }
+
+        FigureViewWindowDictionary.Clear();
+        for (var i = 0; i < graphSymbolInfos.Count; i++)
+        {
+            // todo: update all figure log period functions
+            var symbolInfo = graphSymbolInfos[i];
+            FigureViewWindow.LogPeriod = 1;
+            var (left, top) = GetGraphViewWindowPos(i, graphSymbolInfos.Count);
+            var figureViewWindow = new FigureViewWindow { Title = symbolInfo, Left = left, Top = top };
+            FigureViewWindowDictionary.Add(symbolInfo, figureViewWindow);
+            figureViewWindow.Show();
+        }
+    }
+    
+    private static (double x, double y) GetGraphViewWindowPos(int id, int windowNum, int windowWidth = 600,
+        int windowHeight = 300)
+    {
+        const int windowRowSize = 3;
+        var desktopWorkingArea = SystemParameters.WorkArea;
+        var left = desktopWorkingArea.Right - ((int)(id / windowRowSize) + 1) * windowWidth;
+        var top = desktopWorkingArea.Bottom - (id % windowRowSize + 1) * windowHeight;
+        return (left, top);
     }
 
 }
