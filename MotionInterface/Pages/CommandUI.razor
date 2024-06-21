@@ -40,13 +40,19 @@
         </MButton>
     </MCol>
     <MCol Cols="4" Align="AlignTypes.Start">
-        <MAutocomplete @bind-Value="ProtocolFrame.Command" Items="Enum.GetValues(typeof(ProtocolCommand))
-                         .Cast<ProtocolCommand>().ToList()" ItemText="r=>r.ToString()" ItemValue="r=>r" Dense Solo
+        <MAutocomplete @bind-Value="ProtocolFrame.Command"
+                       Items="Enum.GetValues(typeof(ProtocolCommand))
+                           .Cast<ProtocolCommand>().ToList()"
+                       ItemText="r=>r.ToString()" 
+                       ItemValue="r=>r" Dense Solo
             HideNoData HideSelected Placeholder="Start typing to Search" Label="Command"></MAutocomplete>
     </MCol>
     <MCol Align="AlignTypes.Start">
-        <MAutocomplete @bind-Value="ProtocolFrame.ParamData" Items="Enum.GetValues(typeof(ProtocolCommand))
-                         .Cast<ProtocolCommand>().ToList()" ItemText="r=>r.ToString()" ItemValue="r=>r" Dense Solo
+        <MAutocomplete @bind-Value="ParamDataString"
+                       Items="CommandCommunicationService.SendProtocolFrameList
+                           .Select(p=>p.ParamData.ToFloatString()).ToList()"
+                       ItemText="r=>r.ToString()" 
+                       ItemValue="r=>r" Dense Solo
             HideNoData HideSelected Placeholder="Start typing to Search" Label="Command"></MAutocomplete>
     </MCol>
     <MCol Cols="1" Style="display: flex;justify-content:space-around">
@@ -64,7 +70,7 @@
     [Inject]
     private CommandCommunicationService CommandCommunicationService { get; set; } = default!;
 
-    private string ParamData
+    private string ParamDataString
     {
         get => ProtocolFrame.ParamData.ToFloatString();
         set => ProtocolFrame.ParamData = value.ToByteArray();
@@ -79,7 +85,7 @@
         CommandCommunicationService.ReceivedProtocolFrameList.Add(new ProtocolFrame
             {
                 Command = ProtocolCommand.SendStateIdCmd,
-                ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
+                ParamData = "1.0,2.0,3.0".ToByteArray()
             });
         CommandCommunicationService.ReceivedProtocolFrameList.Add(new ProtocolFrame());
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
@@ -87,12 +93,12 @@
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame
             {
                 Command = ProtocolCommand.SendStateIdCmd,
-                ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
+                ParamData = "0.00001,0.2222,3000000.0".ToByteArray()
             });
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame
             {
                 Command = ProtocolCommand.SendStateIdCmd,
-                ParamData = new byte[] { 0x01, 0x02, 0x03, 0x04 }
+                ParamData = "1.0,2.0,3.0".ToByteArray()
             });
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
         CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());

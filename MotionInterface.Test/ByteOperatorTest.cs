@@ -29,11 +29,11 @@ public class ByteOperatorTest
     }
 
     [Fact]
-    public void StringAndByteArrayConvesionTest() {
+    public void StringAndByteArrayConversionTest() {
         // the latter test can be carried with random float array
         var floatArray = new float[]
         {
-            1.0f,1e-8f,0.1f,0.001f, 1.0f,0.0f,22222.29f,1990129012121.4f,211212e10f
+            1.0f,2.0f,3.0f,1e-8f,0.1f,0.001f, 1.0f,0.0f,22222.29f,1990129012121.4f,211212e10f
         };
         var validateFloatString = string.Join(',',
             floatArray.Select(f => f.ToString()).ToArray());

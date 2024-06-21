@@ -5,10 +5,14 @@
     <MContainer>
         <MRow>
             <MCol Cols="4" Style="display: flex; justify-content: flex-start">
-                @ProtocolFrame.Command
+                <MChip>
+                    @ProtocolFrame.Command
+                </MChip>
             </MCol>
             <MCol>
-                @ProtocolFrame.ParamData.ToHexString()
+                <MCard>
+                    @ProtocolFrame.ParamData.ToFloatString()
+                </MCard>
             </MCol>
         </MRow>
     </MContainer>

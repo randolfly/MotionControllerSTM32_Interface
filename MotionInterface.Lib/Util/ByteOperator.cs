@@ -93,8 +93,8 @@ public static class ByteOperator
 
     public static byte[] ToByteArray(this string rawCommand, char seperator = ',')
     {
-        var floatArrary = ToFloatArray(rawCommand, seperator);
-        return floatArrary.ToByteArray();
+        var floatArray = ToFloatArray(rawCommand, seperator);
+        return floatArray.ToByteArray();
     }
 
     public static string ToFloatString(this float[] data, char seperator = ',') {
