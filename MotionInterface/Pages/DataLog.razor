@@ -1,5 +1,49 @@
 ﻿@page "/DataLog"
-<h3>DataLog</h3>
+@using MotionInterface.Lib.Model
+@using MotionInterface.Lib.Service
+@using MotionInterface.Lib.Util
+
+@inject CommandCommunicationService CommandCommunicationService
+
+<MContainer Fluid Class="fill-height">
+    <MRow Style="min-height:200px">
+        <MCol Cols="12" Sm="6">
+            <MCard Class="fill-height">
+                <MCardTitle>Receive Frames</MCardTitle>
+                <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
+                                Items="CommandCommunicationService.ReceivedProtocolFrameList">
+                    <ItemContent>
+                        <MListItem>
+                            <CommandFrame ProtocolFrame="@context"></CommandFrame>
+                        </MListItem>
+                    </ItemContent>
+                </MVirtualScroll>
+            </MCard>
+        </MCol>
+        <MCol Cols="12" Sm="6">
+            <MCard Class="fill-height">
+                <MCardTitle>Send Frames</MCardTitle>
+                <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
+                                Items="CommandCommunicationService.SendProtocolFrameList">
+                    <ItemContent>
+                        <MListItem>
+                            <CommandFrame ProtocolFrame="@context"></CommandFrame>
+                        </MListItem>
+                    </ItemContent>
+                </MVirtualScroll>
+            </MCard>
+        </MCol>
+    </MRow>
+
+    <MRow NoGutters Style="margin-top: 10px;">
+        <MCol Cols="1" Style="display: flex;justify-content:space-around">
+            <MButton Icon Color="indigo">
+                <MIcon>mdi-send</MIcon>
+            </MButton>
+        </MCol>
+
+    </MRow>
+</MContainer>
 
 @code {
     

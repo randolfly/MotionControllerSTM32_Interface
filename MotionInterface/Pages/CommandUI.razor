@@ -3,6 +3,8 @@
 @using MotionInterface.Lib.Service
 @using MotionInterface.Lib.Util
 
+@inject CommandCommunicationService CommandCommunicationService
+
 <MContainer Fluid Class="fill-height">
 <MRow Style="min-height:200px">
     <MCol Cols="12" Sm="6">
@@ -67,9 +69,7 @@
 
 @code {
     private ProtocolFrame ProtocolFrame { get; set; } = new();
-    [Inject]
-    private CommandCommunicationService CommandCommunicationService { get; set; } = default!;
-
+    
     private string ParamDataString
     {
         get => ProtocolFrame.ParamData.ToFloatString();
