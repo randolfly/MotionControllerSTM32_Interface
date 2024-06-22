@@ -29,7 +29,7 @@ public class ByteOperatorTest
     }
 
     [Fact]
-    public void StringAndByteArrayConversionTest() {
+    public void FloatStringAndByteArrayConversionTest() {
         // the latter test can be carried with random float array
         var floatArray = new float[]
         {
@@ -46,6 +46,22 @@ public class ByteOperatorTest
         for(var i=0; i<floatArray.Length; i++)
         {
             Assert.Equal(testFloatArray[i], floatArray[i]);
+        }
+    }
+
+    [Fact]
+    public void NameStringAndByteArrayConversionTest()
+    {
+        var nameStringList = new List<string>
+        {
+            "kp", "ki", "kd", "state_id", "test_name_hello"
+        };
+        var byteArray = nameStringList.NameStringToByteArray();
+        var testNameStringList = byteArray.ByteArrayToNameString();
+        Assert.Equal(nameStringList.Count, testNameStringList.Count);
+        for (var i = 0; i<nameStringList.Count; i++)
+        {
+            Assert.Equal(nameStringList[i], testNameStringList[i]);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿
+using System.Net.Sockets;
 using System.Text;
 
 namespace MotionInterface.Lib.Util;
@@ -108,25 +109,27 @@ public static class ByteOperator
     }
 
     /// <summary>
-    /// convert name string list to byte array, such as ["kp", "ki", "kd"] => "kp, ki, kd" => [0x11,0x22,...]
+    /// [UTF8] convert name string list to byte array, such as ["kp", "ki", "kd"] => "kp, ki, kd" => [0x11,0x22,...]
     /// </summary>
     /// <param name="nameString">string that contains param names</param>
     /// <param name="separator">string separator</param>
     /// <returns>byte array</returns>
     public static byte[] NameStringToByteArray(this List<string> nameString, char separator = ',')
     {
-        return new byte[1];
+        var midString = string.Join(separator, nameString);
+        return Encoding.UTF8.GetBytes(midString);
     }
     
     /// <summary>
-    /// convert byte array to name string list, such as [0x11,0x22,...] => "kp, ki, kd" => ["kp", "ki", "kd"]
+    /// [UTF8] convert byte array to name string list, such as [0x11,0x22,...] => "kp, ki, kd" => ["kp", "ki", "kd"]
     /// </summary>
     /// <param name="byteArray">byte array that encodes param names</param>
     /// <param name="separator">string separator</param>
     /// <returns>name string</returns>
     public static List<string> ByteArrayToNameString(this byte[] byteArray, char separator = ',')
     {
-        return new List<string>();
+        var midString = Encoding.UTF8.GetString(byteArray);;
+        return midString.Split(separator).ToList();
     }
    
 }
