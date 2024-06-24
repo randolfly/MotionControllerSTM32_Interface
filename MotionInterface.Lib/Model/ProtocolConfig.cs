@@ -3,7 +3,9 @@
 public static class ProtocolConfig
 {
     public const ushort ProtocolFrameMaxSize = 100;
-    public const ushort ProtocolRecursiveBufferSize = 32768;
+    // public const ushort ProtocolRecursiveBufferSize = 32768;
+    public const ushort ProtocolRecursiveBufferSize = 400;
+
     public const ushort ProtocolFrameChecksumSize = 1;
     public const ushort ProtocolFrameHeaderSize = 9;
 

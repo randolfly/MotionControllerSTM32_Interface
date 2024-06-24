@@ -72,5 +72,23 @@ public class ProtocolFrame
         sb.Append($"{MotorId}::{Command}_{ParamData.Length}");
         return sb.ToString();
     }
+
+    public ProtocolFrame DeepClone()
+    {
+        var newProtocolFrame = new ProtocolFrame
+        {
+            Header = Header,
+            MotorId = MotorId,
+            Length = Length,
+            Command = Command,
+            ParamData = new byte[ParamData.Length]
+        };
+        for (var id=0;id<ParamData.Length;id++)
+        {
+            newProtocolFrame.ParamData[id] = ParamData[id];
+        }
+        newProtocolFrame.Checksum = Checksum;
+        return newProtocolFrame;
+    }
 }
 

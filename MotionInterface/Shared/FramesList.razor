@@ -1,0 +1,23 @@
+﻿@using MotionInterface.Lib.Model
+<MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
+    <MCardTitle>Receive Frames</MCardTitle>
+    <MList>
+        <MListItemGroup bind-Value="_selectedFrameId">
+            @if (ShowFramesList != null)
+            {
+                <Virtualize Items="ShowFramesList" Context="frame"
+                            ItemSize="30" OverscanCount="5">
+                    <CommandFrame ProtocolFrame="frame"/>
+                </Virtualize>
+            }
+        </MListItemGroup>
+    </MList>
+</MCard>
+
+
+@code {
+    [Parameter]
+    public List<ProtocolFrame>? ShowFramesList { get; set; }
+    private StringNumber? _selectedFrameId;
+
+}

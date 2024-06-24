@@ -8,30 +8,10 @@
 <MContainer Fluid Class="fill-height">
 <MRow Style="min-height:200px">
     <MCol Cols="12" Sm="6">
-        <MCard Class="fill-height">
-            <MCardTitle>Receive Frames</MCardTitle>
-            <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
-                Items="CommandCommunicationService.ReceivedProtocolFrameList">
-                <ItemContent>
-                    <MListItem>
-                        <CommandFrame ProtocolFrame="@context"></CommandFrame>
-                    </MListItem>
-                </ItemContent>
-            </MVirtualScroll>
-        </MCard>
+        <FramesList ShowFramesList="CommandCommunicationService.ReceivedProtocolFrameList"/>
     </MCol>
     <MCol Cols="12" Sm="6">
-        <MCard Class="fill-height">
-            <MCardTitle>Send Frames</MCardTitle>
-            <MVirtualScroll Height="320" OverscanCount="20" ItemSize="40"
-                Items="CommandCommunicationService.SendProtocolFrameList">
-                <ItemContent>
-                    <MListItem>
-                        <CommandFrame ProtocolFrame="@context"></CommandFrame>
-                    </MListItem>
-                </ItemContent>
-            </MVirtualScroll>
-        </MCard>
+        <FramesList ShowFramesList="CommandCommunicationService.SendProtocolFrameList"/>
     </MCol>
 </MRow>
 
@@ -42,18 +22,20 @@
         </MButton>
     </MCol>
     <MCol Cols="4" Align="AlignTypes.Start">
-        <MAutocomplete @bind-Value="ProtocolFrame.Command"
+        <MAutocomplete @bind-Value="ProtocolCommand"
                        Items="Enum.GetValues(typeof(ProtocolCommand))
                            .Cast<ProtocolCommand>().ToList()"
                        ItemText="r=>r.ToString()" 
-                       ItemValue="r=>r" Dense Solo
-            HideNoData HideSelected Placeholder="Start typing to Search" Label="Command"></MAutocomplete>
+                       ItemValue="r=>r"
+                       Dense Solo
+                       HideNoData HideSelected 
+                       Placeholder="Start typing to Search" Label="Command"/>
     </MCol>
     <MCol Align="AlignTypes.Start">
         <MAutocomplete @bind-Value="ParamDataString"
                        Items="CommandCommunicationService.SendProtocolFrameList
                            .Select(p=>p.ParamData.ToFloatString()).ToList()"
-                       ItemText="r=>r.ToString()" 
+                       ItemText="r=>r.ToString()"
                        ItemValue="r=>r" Dense Solo
             HideNoData HideSelected Placeholder="Start typing to Search" Label="Command"></MAutocomplete>
     </MCol>
@@ -68,8 +50,21 @@
 
 
 @code {
+    private ProtocolCommand _protocolCommand = new ();
+    private ProtocolCommand ProtocolCommand
+    {
+        get
+        {
+            return _protocolCommand;
+        }
+        set
+        {
+            _protocolCommand = value;
+            ProtocolFrame.Command = value;
+        }
+    }
     private ProtocolFrame ProtocolFrame { get; set; } = new();
-    
+
     private string ParamDataString
     {
         get => ProtocolFrame.ParamData.ToFloatString();
@@ -81,39 +76,25 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        CommandCommunicationService.ReceivedProtocolFrameList.Add(new ProtocolFrame());
-        CommandCommunicationService.ReceivedProtocolFrameList.Add(new ProtocolFrame
-            {
-                Command = ProtocolCommand.SendStateIdCmd,
-                ParamData = "1.0,2.0,3.0".ToByteArray()
-            });
-        CommandCommunicationService.ReceivedProtocolFrameList.Add(new ProtocolFrame());
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame
-            {
-                Command = ProtocolCommand.SendStateIdCmd,
-                ParamData = "0.00001,0.2222,3000000.0".ToByteArray()
-            });
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame
-            {
-                Command = ProtocolCommand.SendStateIdCmd,
-                ParamData = "1.0,2.0,3.0".ToByteArray()
-            });
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
-        CommandCommunicationService.SendProtocolFrameList.Add(new ProtocolFrame());
+        var invocationList = CommandCommunicationService.OnParseFrameDataAction?
+            .GetInvocationList();
+        if (invocationList == null || !invocationList.Contains(UpdateUiFrames))
+        {
+            CommandCommunicationService.OnParseFrameDataAction += UpdateUiFrames;
+        }
+    }
+
+    private void UpdateUiFrames(ProtocolFrame protocolFrame)
+    {
+        // update received frames
+        InvokeAsync(StateHasChanged);
     }
 
 
     private void SendProtocolFrame()
     {
         CommandCommunicationService.SendFrameData(ProtocolFrame);
+        InvokeAsync(StateHasChanged);
     }
 
     private void ToggleSerialPort()

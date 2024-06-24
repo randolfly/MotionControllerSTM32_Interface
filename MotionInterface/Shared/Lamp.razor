@@ -23,13 +23,13 @@
 @code {
 
     [Parameter]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [Parameter]
     public bool Status { get; set; }
 
     [Parameter]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     private string Color => Status ? "green lighten-2" : "amber darken-3";
 }

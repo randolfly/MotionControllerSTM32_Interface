@@ -86,6 +86,12 @@ public static class ByteOperator
         return byteArray;
     }
 
+    /// <summary>
+    /// used for ui presentation, convert a byte[] to string as: "1.0,2.0,3.0"
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="separator"></param>
+    /// <returns></returns>
     public static string ToFloatString(this byte[] data, char separator = ',')
     {
         var floatArray = data.ToFloatArray();
@@ -94,7 +100,7 @@ public static class ByteOperator
 
     public static byte[] ToByteArray(this string rawCommand, char separator = ',')
     {
-        var floatArray = ToFloatArray(rawCommand, separator);
+        var floatArray = rawCommand.ToFloatArray(separator);
         return floatArray.ToByteArray();
     }
 

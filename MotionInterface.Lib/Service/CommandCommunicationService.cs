@@ -6,7 +6,7 @@ namespace MotionInterface.Lib.Service;
 
 public class CommandCommunicationService
 {
-    public SerialPort SerialPort = new();
+    public readonly SerialPort SerialPort = new();
     public readonly List<ProtocolFrame> ReceivedProtocolFrameList = new ();
     public readonly List<ProtocolFrame> SendProtocolFrameList = new ();
     public ProtocolFrame ProtocolFrame = new();
@@ -22,6 +22,7 @@ public class CommandCommunicationService
     
     public CommandCommunicationService()
     {
+        SerialPort.BaudRate = 115200;
         SerialPort.DataReceived += PortDataReceived;
         _periodicActionTimer = new PeriodicActionTimer(ParseReceivedFrames, 100);
     }
@@ -38,7 +39,7 @@ public class CommandCommunicationService
         var data = new byte[ProtocolConfig.ProtocolFrameMaxSize];
         protocolFrame.SerializeFrameData(ref data);
         SerialPort.Write(data, 0, protocolFrame.Length);
-        SendProtocolFrameList.Add(protocolFrame);
+        SendProtocolFrameList.Add(protocolFrame.DeepClone());
     }
     
     #endregion
@@ -59,7 +60,7 @@ public class CommandCommunicationService
         if (_protocolParserService.ProtocolFrame?.Command == ProtocolCommand.NullCmd) return;
         if (_protocolParserService.ProtocolFrame == null) return;
         ProtocolFrame = _protocolParserService.ProtocolFrame;
-        ReceivedProtocolFrameList.Add(_protocolParserService.ProtocolFrame);
+        ReceivedProtocolFrameList.Add(_protocolParserService.ProtocolFrame.DeepClone());
         switch (ProtocolFrame.Command)
         {
             case ProtocolCommand.DataLogSendAvailableDataCmd:
