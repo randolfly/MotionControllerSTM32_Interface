@@ -1,23 +1,33 @@
 ﻿@using MotionInterface.Lib.Model
-<MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
-    <MCardTitle>Receive Frames</MCardTitle>
-    <MList>
-        <MListItemGroup bind-Value="_selectedFrameId">
-            @if (ShowFramesList != null)
-            {
-                <Virtualize Items="ShowFramesList" Context="frame"
-                            ItemSize="30" OverscanCount="5">
-                    <CommandFrame ProtocolFrame="frame"/>
-                </Virtualize>
-            }
-        </MListItemGroup>
-    </MList>
-</MCard>
+@inject IJSRuntime JS
 
+<MList>
+    <MListItemGroup bind-Value="_selectedFrameId">
+        @if (ShowFramesList != null)
+        {
+            <Virtualize Items="ShowFramesList" Context="frame"
+                        ItemSize="30" OverscanCount="5">
+                <CommandFrame ProtocolFrame="frame"/>
+            </Virtualize>
+            @* @foreach (var frame in ShowFramesList) *@
+            @* { *@
+            @*      *@
+            @* } *@
+        }
+        <!-- new content dynamically inserted here -->
+        <div id="@AnchorName"></div>
+    </MListItemGroup>
+</MList>
 
 @code {
     [Parameter]
     public List<ProtocolFrame>? ShowFramesList { get; set; }
-    private StringNumber? _selectedFrameId;
 
+    private string AnchorName { get; set; } = "anchor" + new Random(Guid.NewGuid().GetHashCode()).Next();
+    private StringNumber? _selectedFrameId;
+    
+    public async Task ScrollToBottom()
+    {
+        await JS.InvokeVoidAsync("ScrollToBottom", AnchorName);
+    }
 }

@@ -8,21 +8,29 @@
 <MContainer Fluid Class="fill-height">
 <MRow Style="min-height:200px">
     <MCol Cols="12" Sm="6">
-        <FramesList ShowFramesList="CommandCommunicationService.ReceivedProtocolFrameList"/>
+        <MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
+            <MCardTitle>Receive Frames</MCardTitle>
+            <FramesList @ref="_receiveFramesList"
+                        ShowFramesList="CommandCommunicationService.ReceivedProtocolFrameList"/>
+        </MCard>
     </MCol>
     <MCol Cols="12" Sm="6">
-        <FramesList ShowFramesList="CommandCommunicationService.SendProtocolFrameList"/>
+        <MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
+            <MCardTitle>Send Frames</MCardTitle>
+            <FramesList @ref="_sendFramesList"
+                        ShowFramesList="CommandCommunicationService.SendProtocolFrameList"/>
+        </MCard>
     </MCol>
 </MRow>
 
 <MRow NoGutters Style="margin-top: 10px;">
     <MCol Cols="1" Style="display: flex;justify-content:space-around">
-        <MButton Icon Color="@_portStatusLed" OnClick="ToggleSerialPort">
+        <MButton Icon Color="@PortStatusLed" OnClick="ToggleSerialPort">
             <MIcon>mdi-power</MIcon>
         </MButton>
     </MCol>
     <MCol Cols="4" Align="AlignTypes.Start">
-        <MAutocomplete @bind-Value="ProtocolCommand"
+        <MAutocomplete @bind-Value="ProtocolFrame.Command"
                        Items="Enum.GetValues(typeof(ProtocolCommand))
                            .Cast<ProtocolCommand>().ToList()"
                        ItemText="r=>r.ToString()" 
@@ -50,50 +58,41 @@
 
 
 @code {
-    private ProtocolCommand _protocolCommand = new ();
-    private ProtocolCommand ProtocolCommand
-    {
-        get
-        {
-            return _protocolCommand;
-        }
-        set
-        {
-            _protocolCommand = value;
-            ProtocolFrame.Command = value;
-        }
-    }
     private ProtocolFrame ProtocolFrame { get; set; } = new();
-
+    
     private string ParamDataString
     {
         get => ProtocolFrame.ParamData.ToFloatString();
         set => ProtocolFrame.ParamData = value.ToByteArray();
     }
 
-    private string _portStatusLed = "red";
+    private string PortStatusLed => CommandCommunicationService.IsPortOpen ? "green" : "red";
 
+    private FramesList _sendFramesList, _receiveFramesList;
+    
     protected override void OnInitialized()
     {
         base.OnInitialized();
         var invocationList = CommandCommunicationService.OnParseFrameDataAction?
             .GetInvocationList();
-        if (invocationList == null || !invocationList.Contains(UpdateUiFrames))
+        if (invocationList == null || !invocationList.Contains(UpdateSendFramesUi))
         {
-            CommandCommunicationService.OnParseFrameDataAction += UpdateUiFrames;
+            CommandCommunicationService.OnParseFrameDataAction += UpdateSendFramesUi;
         }
     }
 
-    private void UpdateUiFrames(ProtocolFrame protocolFrame)
+    private void UpdateSendFramesUi(ProtocolFrame protocolFrame)
     {
         // update received frames
+        InvokeAsync(() => _receiveFramesList.ScrollToBottom());
+        InvokeAsync(() => _sendFramesList.ScrollToBottom());
         InvokeAsync(StateHasChanged);
     }
 
-
     private void SendProtocolFrame()
     {
-        CommandCommunicationService.SendFrameData(ProtocolFrame);
+        CommandCommunicationService.SendFrameData(ProtocolFrame); 
+        InvokeAsync(() => _sendFramesList.ScrollToBottom());
         InvokeAsync(StateHasChanged);
     }
 
@@ -107,11 +106,6 @@
         {
             CommandCommunicationService.OpenPort();
         }
-        UpdatePortStatusLed();
-    }
-
-    private void UpdatePortStatusLed()
-    {
-        _portStatusLed = CommandCommunicationService.IsPortOpen ? "green" : "red";
+        InvokeAsync(StateHasChanged);
     }
 }
