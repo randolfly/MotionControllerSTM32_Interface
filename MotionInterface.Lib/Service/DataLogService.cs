@@ -49,7 +49,7 @@ public class DataLogService
         var endId = receivedFrameData.Count;
         for (var i = startId; i < endId; i++)
         {
-            RecordData.Add(receivedFrameData[i].ParamData.ToFloatArray().ToList());
+            RecordData.Add(receivedFrameData[i].ParamData.ByteArrayToFloatArray().ToList());
         }
         OnParseFrameDataAction?.Invoke(startId);
     }

@@ -20,8 +20,8 @@ public class ByteOperatorTest
         {
             1.0f,1e-8f,0.1f,0.001f, 1.0f,0.0f,22222.29f,1990129012121.4f,211212e10f
         };
-        var byteArray = floatArray.ToByteArray();
-        var newFloatArray = byteArray.ToFloatArray();
+        var byteArray = floatArray.FloatArrayToByteArray();
+        var newFloatArray = byteArray.ByteArrayToFloatArray();
         for (var i = 0; i < floatArray.Length; i++)
         {
             Assert.Equal(floatArray[i], newFloatArray[i]);
@@ -38,11 +38,11 @@ public class ByteOperatorTest
         var validateFloatString = string.Join(',',
             floatArray.Select(f => f.ToString()).ToArray());
         _testOutputHelper.WriteLine(validateFloatString);
-        var testFloatString = floatArray.ToFloatString();
+        var testFloatString = floatArray.FloatArrayToFloatString();
         Assert.Equal(validateFloatString, testFloatString);
 
         // convert back
-        var testFloatArray = testFloatString.ToFloatArray();
+        var testFloatArray = testFloatString.FloatStringToFloatArray();
         for(var i=0; i<floatArray.Length; i++)
         {
             Assert.Equal(testFloatArray[i], floatArray[i]);
@@ -56,8 +56,8 @@ public class ByteOperatorTest
         {
             "kp", "ki", "kd", "state_id", "test_name_hello"
         };
-        var byteArray = nameStringList.NameStringToByteArray();
-        var testNameStringList = byteArray.ByteArrayToNameString();
+        var byteArray = nameStringList.NameStringListToByteArray();
+        var testNameStringList = byteArray.ByteArrayToNameStringList();
         Assert.Equal(nameStringList.Count, testNameStringList.Count);
         for (var i = 0; i<nameStringList.Count; i++)
         {

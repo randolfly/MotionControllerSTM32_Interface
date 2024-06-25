@@ -40,31 +40,23 @@
                        Placeholder="Start typing to Search" Label="Command"/>
     </MCol>
     <MCol Align="AlignTypes.Start">
-        <MAutocomplete @bind-Value="ParamDataString"
-                       Items="CommandCommunicationService.SendProtocolFrameList
-                           .Select(p=>p.ParamData.ToFloatString()).ToList()"
-                       ItemText="r=>r.ToString()"
-                       ItemValue="r=>r" Dense Solo
-            HideNoData HideSelected Placeholder="Start typing to Search" Label="Command"></MAutocomplete>
+        <MTextField @bind-Value="ParamDataString" Dense Solo
+                    Label="Limit Input">
+        </MTextField>
     </MCol>
     <MCol Cols="1" Style="display: flex;justify-content:space-around">
         <MButton Icon Color="indigo" OnClick="SendProtocolFrame">
             <MIcon>mdi-send</MIcon>
         </MButton>
     </MCol>
-
 </MRow>
 </MContainer>
 
 
 @code {
     private ProtocolFrame ProtocolFrame { get; set; } = new();
-    
-    private string ParamDataString
-    {
-        get => ProtocolFrame.ParamData.ToFloatString();
-        set => ProtocolFrame.ParamData = value.ToByteArray();
-    }
+
+    private string ParamDataString { get; set; } = string.Empty;
 
     private string PortStatusLed => CommandCommunicationService.IsPortOpen ? "green" : "red";
 
@@ -91,6 +83,18 @@
 
     private void SendProtocolFrame()
     {
+        if (ParamDataString.Length > 0)
+        {
+            // command head validation
+            if (ProtocolFrame.Command == ProtocolCommand.SendStateIdCmd)
+            {
+                ProtocolFrame.ParamData = ParamDataString.NameStringToByteArray();
+            }
+            else
+            {
+                ProtocolFrame.ParamData = ParamDataString.FloatStringToByteArray();
+            }
+        }
         CommandCommunicationService.SendFrameData(ProtocolFrame); 
         InvokeAsync(() => _sendFramesList.ScrollToBottom());
         InvokeAsync(StateHasChanged);

@@ -13,11 +13,12 @@ public class ProtocolFrame
     public byte Checksum;
 
     /// <summary>
-    /// serialize frame struct to uint8 data array, the checksum will be calculated automatically
+    /// serialize frame struct to uint8 data array, the length and checksum will be calculated automatically
     /// </summary>
     /// <param name="dataDest">target data array, only store 1 frame data, no need to protect the data array</param>
     public void SerializeFrameData(ref byte[] dataDest)
     {
+        Length = (ushort)(ProtocolConfig.ProtocolFrameHeaderSize + ParamData.Length + ProtocolConfig.ProtocolFrameChecksumSize);
         ((uint)Header).ExtractTypeToBytes(ref dataDest,
             ProtocolConfig.ProtocolFrameHeaderOffset);
         ((byte)MotorId).ExtractTypeToBytes(ref dataDest,

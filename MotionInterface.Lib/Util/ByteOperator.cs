@@ -65,7 +65,7 @@ public static class ByteOperator
         return sb.ToString();
     }
 
-    public static float[] ToFloatArray(this byte[] data)
+    public static float[] ByteArrayToFloatArray(this byte[] data)
     {
         // 4bit - float
         var floatArray = new float[data.Length / 4];
@@ -76,7 +76,7 @@ public static class ByteOperator
         return floatArray;
     }
 
-    public static byte[] ToByteArray(this float[] data)
+    public static byte[] FloatArrayToByteArray(this float[] data)
     {
         var byteArray = new byte[data.Length * 4];
         for (var i = 0; i < data.Length; i++)
@@ -92,25 +92,26 @@ public static class ByteOperator
     /// <param name="data"></param>
     /// <param name="separator"></param>
     /// <returns></returns>
-    public static string ToFloatString(this byte[] data, char separator = ',')
+    public static string ByteArrayToFloatString(this byte[] data, char separator = ',')
     {
-        var floatArray = data.ToFloatArray();
-        return floatArray.ToFloatString(separator);
+        var floatArray = data.ByteArrayToFloatArray();
+        return floatArray.FloatArrayToFloatString(separator);
     }
 
-    public static byte[] ToByteArray(this string rawCommand, char separator = ',')
+    public static byte[] FloatStringToByteArray(this string rawCommand, char separator = ',')
     {
-        var floatArray = rawCommand.ToFloatArray(separator);
-        return floatArray.ToByteArray();
+        var floatArray = rawCommand.FloatStringToFloatArray(separator);
+        return floatArray.FloatArrayToByteArray();
     }
 
-    public static string ToFloatString(this float[] data, char separator = ',') {
+    public static string FloatArrayToFloatString(this float[] data, char separator = ',') {
         return string.Join(separator, data);
     }
 
-    public static float[] ToFloatArray(this string rawCommand, char separator = ',') {
+    public static float[] FloatStringToFloatArray(this string rawCommand, char separator = ',') {
         var stringArray = rawCommand.Trim().Split(separator);
-        var floatArray = stringArray.Select(float.Parse).ToArray();
+        var floatArray = stringArray.Where(s => s.Length > 0)
+            .Select(float.Parse).ToArray();
         return floatArray;
     }
 
@@ -120,10 +121,15 @@ public static class ByteOperator
     /// <param name="nameString">string that contains param names</param>
     /// <param name="separator">string separator</param>
     /// <returns>byte array</returns>
-    public static byte[] NameStringToByteArray(this List<string> nameString, char separator = ',')
+    public static byte[] NameStringListToByteArray(this List<string> nameString, char separator = ',')
     {
         var midString = string.Join(separator, nameString);
-        return Encoding.UTF8.GetBytes(midString);
+        return midString.NameStringToByteArray(separator);
+    }
+    
+    public static byte[] NameStringToByteArray(this string nameString, char separator = ',')
+    {
+        return Encoding.UTF8.GetBytes(nameString);
     }
     
     /// <summary>
@@ -132,10 +138,14 @@ public static class ByteOperator
     /// <param name="byteArray">byte array that encodes param names</param>
     /// <param name="separator">string separator</param>
     /// <returns>name string</returns>
-    public static List<string> ByteArrayToNameString(this byte[] byteArray, char separator = ',')
+    public static List<string> ByteArrayToNameStringList(this byte[] byteArray, char separator = ',')
     {
         var midString = Encoding.UTF8.GetString(byteArray);;
         return midString.Split(separator).ToList();
     }
-   
+    
+    public static string ByteArrayToNameString(this byte[] byteArray, char separator = ',')
+    {
+        return Encoding.UTF8.GetString(byteArray);
+    }
 }

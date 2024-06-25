@@ -11,7 +11,14 @@
             </MCol>
             <MCol>
                 <MCard>
-                    @ProtocolFrame.ParamData.ToFloatString()
+                    @if (@ProtocolFrame.Command == ProtocolCommand.SendStateIdCmd)
+                    {
+                        @ProtocolFrame.ParamData.ByteArrayToNameString()
+                    }
+                    else
+                    {
+                        @ProtocolFrame.ParamData.ByteArrayToFloatString()
+                    }
                 </MCard>
             </MCol>
         </MRow>

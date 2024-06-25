@@ -65,12 +65,12 @@ public class CommandCommunicationService
         {
             case ProtocolCommand.DataLogSendAvailableDataCmd:
             {
-                AvailableSymbolName = ProtocolFrame.ParamData.ByteArrayToNameString();
+                AvailableSymbolName = ProtocolFrame.ParamData.ByteArrayToNameStringList();
                 break;
             }
             case ProtocolCommand.DataLogEchoLogDataCmd:
             {
-                EchoRecordSymbolName = ProtocolFrame.ParamData.ByteArrayToNameString();
+                EchoRecordSymbolName = ProtocolFrame.ParamData.ByteArrayToNameStringList();
                 break;
             }
         }
@@ -96,7 +96,7 @@ public class CommandCommunicationService
         var setRecordDataFrame = new ProtocolFrame
         {
             Command = ProtocolCommand.DataLogSetLogDataCmd,
-            ParamData = RecordSymbolName.NameStringToByteArray()
+            ParamData = RecordSymbolName.NameStringListToByteArray()
         };
         SendFrameData(setRecordDataFrame);
     }
