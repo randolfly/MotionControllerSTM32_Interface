@@ -1,6 +1,8 @@
 ﻿using System.IO.Ports;
 using MotionInterface.Lib.Model;
 using MotionInterface.Lib.Util;
+using System.Management;
+using System.Text.RegularExpressions;
 
 namespace MotionInterface.Lib.Service;
 
@@ -145,6 +147,45 @@ public class CommandCommunicationService
         {
             Console.WriteLine(e);
         }
+    }
+
+    public static Dictionary<string, string> GetPortDetailsDictionary()
+    {
+        Dictionary<string, string> comDictionary = new();
+        var pattern = @"(?<info>.*)\((?<com>COM\d)\)$";
+        var coms = GetPortDetailsList();
+        foreach (var com in coms)
+        {
+            var match = Regex.Match(com, pattern);
+            if (match.Success)
+            {
+                var info = match.Groups["info"].ToString();
+                var comName = match.Groups["com"].ToString();
+                comDictionary.Add($"{info}: {comName}", comName);
+            }
+        }
+
+        return comDictionary;
+    }
+
+    /// <summary>
+    /// ONLY support WINDOWS!!!
+    /// </summary>
+    private static List<string> GetPortDetailsList()
+    {
+        var infos = new List<string>();
+        using (ManagementObjectSearcher searcher = new ManagementObjectSearcher
+                   ("select * from Win32_PnPEntity where Name like '%(COM%'"))
+        {
+            var hardInfos = searcher.Get();
+            foreach (var hardInfo in hardInfos)
+            {
+                if (hardInfo.Properties["Name"].Value == null) continue;
+                var deviceName = hardInfo.Properties["Name"].Value.ToString();
+                infos.Add(deviceName);
+            }
+        }
+        return infos;
     }
     
     public void SetReceiveBytesThreshold(int threshold)

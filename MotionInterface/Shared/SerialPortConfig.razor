@@ -5,8 +5,8 @@
         <MContainer>
             <MRow>
                 <MCol Cols="12">
-                    <MSelect @bind-Value="SerialPort.PortName"
-                             Items="SerialPort.GetPortNames()"
+                    <MSelect @bind-Value="SelectedCom"
+                             Items="_comDictionary.Keys.ToList()"
                              Dense
                              HideSelected
                              ItemText="u => u"
@@ -51,4 +51,26 @@
 @code {
     [Parameter]
     public required SerialPort SerialPort { get; set; }
+
+    private string _selectedCom = string.Empty;
+    private string SelectedCom
+    {
+        get => _selectedCom;
+        set
+        {
+            _selectedCom = value;
+            SerialPort.PortName = _comDictionary[value];
+        }
+    }
+    
+    private Dictionary<string, string> _comDictionary = new();
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _comDictionary = CommandCommunicationService.GetPortDetailsDictionary();
+        _selectedCom = _comDictionary
+            .FirstOrDefault(q => q.Value == SerialPort.PortName)
+            .Key;
+    }
 }

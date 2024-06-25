@@ -1,0 +1,20 @@
+﻿@page "/TestPage"
+@using MotionInterface.Lib.Service
+
+@foreach (var (com, info) in ComDictionary)
+{
+    <div>
+        @com: @info
+    </div>
+}
+
+@code {
+    public Dictionary<string, string> ComDictionary = new();
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ComDictionary = CommandCommunicationService.GetPortDetailsDictionary();
+    }
+
+}
