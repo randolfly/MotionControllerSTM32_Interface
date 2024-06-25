@@ -11,6 +11,8 @@ public class ProtocolFrame
     public ProtocolCommand Command = ProtocolCommand.NullCmd;
     public byte[] ParamData = Array.Empty<byte>();
     public byte Checksum;
+    
+    public string DateTime = System.DateTime.Now.ToString("HH:mm:ss:ms");
 
     /// <summary>
     /// serialize frame struct to uint8 data array, the length and checksum will be calculated automatically
@@ -82,7 +84,7 @@ public class ProtocolFrame
             MotorId = MotorId,
             Length = Length,
             Command = Command,
-            ParamData = new byte[ParamData.Length]
+            ParamData = new byte[ParamData.Length],
         };
         for (var id=0;id<ParamData.Length;id++)
         {
@@ -90,6 +92,11 @@ public class ProtocolFrame
         }
         newProtocolFrame.Checksum = Checksum;
         return newProtocolFrame;
+    }
+
+    public void UpdateFrameDateTime()
+    {
+        DateTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ms");
     }
 }
 

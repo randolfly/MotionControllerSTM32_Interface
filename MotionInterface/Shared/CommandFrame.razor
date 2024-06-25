@@ -4,21 +4,18 @@
 <MListItem>
     <MContainer>
         <MRow>
-            <MCol Cols="6" Style="display: flex; justify-content: flex-start">
-                <MChip Label>
+            <MCol Cols="6" Style="display: flex; justify-content: flex-start; align-self: center">
+                <MChip Label Outlined>
                     @ProtocolFrame.Command
                 </MChip>
             </MCol>
             <MCol>
                 <MCard>
-                    @if (@ProtocolFrame.Command == ProtocolCommand.SendStateIdCmd)
-                    {
-                        @ProtocolFrame.ParamData.ByteArrayToNameString()
-                    }
-                    else
-                    {
-                        @ProtocolFrame.ParamData.ByteArrayToFloatString()
-                    }
+                    <PBlockText Primary="@ParamDataString"
+                                Secondary="@ProtocolFrame.DateTime">
+                                @* Tags="@tags"> *@
+                    </PBlockText>
+                    
                 </MCard>
             </MCol>
         </MRow>
@@ -29,4 +26,26 @@
 @code {
     [Parameter] 
     public ProtocolFrame ProtocolFrame { get; set; } = new();
+
+    private string ParamDataString
+    {
+        get
+        {
+            if (ProtocolFrame.Command == ProtocolCommand.SendStateIdCmd)
+            {
+                return ProtocolFrame.ParamData.ByteArrayToNameString();
+            }
+            else
+            {
+                return ProtocolFrame.ParamData.ByteArrayToFloatString();
+            }
+        }
+    }
+    
+    //todo: some tag functionalities reserved...
+    static IEnumerable<BlockTextTag> tags = new List<BlockTextTag>()
+    {
+        new("Blazor", "green", "white"),
+        new("Material Design", "purple", true)
+    };
 }

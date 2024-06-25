@@ -8,18 +8,48 @@
 <MContainer Fluid Class="fill-height">
 <MRow Style="min-height:200px">
     <MCol Cols="12" Sm="6">
-        <MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
-            <MCardTitle>Receive Frames</MCardTitle>
-            <FramesList @ref="_receiveFramesList"
-                        ShowFramesList="CommandCommunicationService.ReceivedProtocolFrameList"/>
-        </MCard>
+        <MRow>
+            <MCol>
+                <div class="text-h5">
+                    Received Frames
+                </div>
+            </MCol>
+            <MCol>
+                <MButton>
+                    Export Data
+                </MButton>
+            </MCol>
+        </MRow>
+        <MRow>
+            <MCol>
+                <MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
+                    <FramesList @ref="_receiveFramesList"
+                                ShowFramesList="CommandCommunicationService.ReceivedProtocolFrameList"/>
+                </MCard>
+            </MCol>
+        </MRow>
     </MCol>
     <MCol Cols="12" Sm="6">
-        <MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
-            <MCardTitle>Send Frames</MCardTitle>
-            <FramesList @ref="_sendFramesList"
-                        ShowFramesList="CommandCommunicationService.SendProtocolFrameList"/>
-        </MCard>
+        <MRow>
+            <MCol>
+                <div class="text-h5">
+                    Send Frames
+                </div>
+            </MCol>
+            <MCol>
+                <MButton>
+                    Export Data
+                </MButton>
+            </MCol>
+        </MRow>
+        <MRow>
+            <MCol>
+                <MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
+                    <FramesList @ref="_sendFramesList"
+                                ShowFramesList="CommandCommunicationService.SendProtocolFrameList"/>
+                </MCard>
+            </MCol>
+        </MRow>
     </MCol>
 </MRow>
 
@@ -76,8 +106,8 @@
     private void UpdateSendFramesUi(ProtocolFrame protocolFrame)
     {
         // update received frames
-        InvokeAsync(() => _receiveFramesList.ScrollToBottom());
-        InvokeAsync(() => _sendFramesList.ScrollToBottom());
+        // InvokeAsync(() => _receiveFramesList.ScrollToBottom());
+        // InvokeAsync(() => _sendFramesList.ScrollToBottom());
         InvokeAsync(StateHasChanged);
     }
 
@@ -96,7 +126,7 @@
             }
         }
         CommandCommunicationService.SendFrameData(ProtocolFrame); 
-        InvokeAsync(() => _sendFramesList.ScrollToBottom());
+        // InvokeAsync(() => _sendFramesList.ScrollToBottom());
         InvokeAsync(StateHasChanged);
     }
 
