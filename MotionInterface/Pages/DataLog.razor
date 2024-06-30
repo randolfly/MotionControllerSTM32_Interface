@@ -52,22 +52,22 @@
     </MRow>
     <MRow NoGutters Style="margin-top: 10px;">
         <MCol Cols="3" Style="display: flex;justify-content:space-around">
-            <MButton Color="indigo" OnClick="GetAvailableRecordDataNames">
+            <MButton Color="primary" OnClick="GetAvailableRecordDataNames">
                 GetAvailable
             </MButton>
         </MCol>
         <MCol Cols="3" Style="display: flex;justify-content:space-around">
-            <MButton Color="indigo" OnClick="SetRecordDataNames">
+            <MButton Color="primary"  OnClick="SetRecordDataNames">
                 SetRecord
             </MButton>
         </MCol>
         <MCol Cols="3" Style="display: flex;justify-content:space-around">
-            <MButton Color="indigo" OnClick="StartRecordData">
+            <MButton Color="primary"  OnClick="StartRecordData">
                 StartRecord
             </MButton>
         </MCol>
         <MCol Cols="3" Style="display: flex;justify-content:space-around">
-            <MButton Color="indigo" OnClick="StopRecordData">
+            <MButton Color="primary"  OnClick="StopRecordData">
                 StopRecord
             </MButton>
         </MCol>
@@ -118,6 +118,7 @@
         {
             PopupService.EnqueueSnackbarAsync("Please check if serial port is opened");
         }
+        StateHasChanged();
     }
 
     private void GetAvailableRecordDataNames()
@@ -130,6 +131,7 @@
         {
             PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
         }
+        StateHasChanged();
     }
 
     private void StartRecordData()
@@ -164,6 +166,7 @@
         {
             PopupService.EnqueueSnackbarAsync("Record and Echo Names not same");   
         }
+        StateHasChanged();
     }
 
     private void ClearRecordData()
@@ -187,6 +190,7 @@
         {
             figureViewWindow.ScaleRangeToMax();
         }
+        StateHasChanged();
     }
 
     private void UpdateGraphViewData(int startId)

@@ -27,21 +27,8 @@
     [Parameter] 
     public ProtocolFrame ProtocolFrame { get; set; } = new();
 
-    private string ParamDataString
-    {
-        get
-        {
-            if (ProtocolFrame.Command == ProtocolCommand.SendStateIdCmd)
-            {
-                return ProtocolFrame.ParamData.ByteArrayToNameString();
-            }
-            else
-            {
-                return ProtocolFrame.ParamData.ByteArrayToFloatString();
-            }
-        }
-    }
-    
+    private string ParamDataString => ProtocolFrame.SerializeParamData();
+
     //todo: some tag functionalities reserved...
     static IEnumerable<BlockTextTag> tags = new List<BlockTextTag>()
     {

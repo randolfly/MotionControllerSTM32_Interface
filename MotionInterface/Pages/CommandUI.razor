@@ -6,80 +6,74 @@
 @inject CommandCommunicationService CommandCommunicationService
 
 <MContainer Fluid Class="fill-height">
-<MRow Style="min-height:200px">
-    <MCol Cols="12" Sm="6">
-        <MRow>
-            <MCol>
-                <div class="text-h5">
-                    Received Frames
-                </div>
-            </MCol>
-            <MCol>
-                <MButton>
-                    Export Data
-                </MButton>
-            </MCol>
-        </MRow>
-        <MRow>
-            <MCol>
-                <MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
-                    <FramesList @ref="_receiveFramesList"
-                                ShowFramesList="CommandCommunicationService.ReceivedProtocolFrameList"/>
-                </MCard>
-            </MCol>
-        </MRow>
-    </MCol>
-    <MCol Cols="12" Sm="6">
-        <MRow>
-            <MCol>
-                <div class="text-h5">
-                    Send Frames
-                </div>
-            </MCol>
-            <MCol>
-                <MButton>
-                    Export Data
-                </MButton>
-            </MCol>
-        </MRow>
-        <MRow>
-            <MCol>
-                <MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
-                    <FramesList @ref="_sendFramesList"
-                                ShowFramesList="CommandCommunicationService.SendProtocolFrameList"/>
-                </MCard>
-            </MCol>
-        </MRow>
-    </MCol>
-</MRow>
+    <MRow Style="min-height:200px">
+        <MCol Cols="12" Sm="6">
+            <MRow>
+                <MCol>
+                    <div class="text-h5">
+                        Received Frames
+                    </div>
+                </MCol>
+                <MCol>
+                    <MButton>
+                        Export Data
+                    </MButton>
+                </MCol>
+            </MRow>
+            <MRow>
+                <MCol>
+                    <MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
+                        <FramesList @ref="_receiveFramesList"
+                            ShowFramesList="CommandCommunicationService.ReceivedProtocolFrameList" />
+                    </MCard>
+                </MCol>
+            </MRow>
+        </MCol>
+        <MCol Cols="12" Sm="6">
+            <MRow>
+                <MCol>
+                    <div class="text-h5">
+                        Send Frames
+                    </div>
+                </MCol>
+                <MCol>
+                    <MButton>
+                        Export Data
+                    </MButton>
+                </MCol>
+            </MRow>
+            <MRow>
+                <MCol>
+                    <MCard Class="fill-height" Style="height:400px;overflow-y:scroll">
+                        <FramesList @ref="_sendFramesList"
+                            ShowFramesList="CommandCommunicationService.SendProtocolFrameList" />
+                    </MCard>
+                </MCol>
+            </MRow>
+        </MCol>
+    </MRow>
 
-<MRow NoGutters Style="margin-top: 10px;">
-    <MCol Cols="1" Style="display: flex;justify-content:space-around">
-        <MButton Icon Color="@PortStatusLed" OnClick="ToggleSerialPort">
-            <MIcon>mdi-power</MIcon>
-        </MButton>
-    </MCol>
-    <MCol Cols="4" Align="AlignTypes.Start">
-        <MAutocomplete @bind-Value="ProtocolFrame.Command"
-                       Items="Enum.GetValues(typeof(ProtocolCommand))
-                           .Cast<ProtocolCommand>().ToList()"
-                       ItemText="r=>r.ToString()" 
-                       ItemValue="r=>r"
-                       Dense Solo
-                       HideNoData HideSelected 
-                       Placeholder="Start typing to Search" Label="Command"/>
-    </MCol>
-    <MCol Align="AlignTypes.Start">
-        <MTextField @bind-Value="ParamDataString" Dense Solo
-                    Label="Limit Input">
-        </MTextField>
-    </MCol>
-    <MCol Cols="1" Style="display: flex;justify-content:space-around">
-        <MButton Icon Color="indigo" OnClick="SendProtocolFrame">
-            <MIcon>mdi-send</MIcon>
-        </MButton>
-    </MCol>
-</MRow>
+    <MRow NoGutters Style="margin-top: 10px;">
+        <MCol Cols="1" Style="display: flex;justify-content:space-around">
+            <MButton Icon Color="@PortStatusLed" OnClick="ToggleSerialPort">
+                <MIcon>mdi-power</MIcon>
+            </MButton>
+        </MCol>
+        <MCol Cols="4" Align="AlignTypes.Start">
+            <MAutocomplete @bind-Value="ProtocolFrame.Command" Items="Enum.GetValues(typeof(ProtocolCommand))
+                           .Cast<ProtocolCommand>().ToList()" ItemText="r=>r.ToString()" ItemValue="r=>r" Dense Solo
+                HideNoData HideSelected Placeholder="Start typing to Search" Label="Command" />
+        </MCol>
+        <MCol Align="AlignTypes.Start">
+            <MTextField @bind-Value="ParamDataString" Dense Solo Label="Limit Input">
+            </MTextField>
+        </MCol>
+        <MCol Cols="1" Style="display: flex;justify-content:space-around">
+            <MButton Icon Color="indigo" OnClick="SendProtocolFrame">
+                <MIcon>mdi-send</MIcon>
+            </MButton>
+        </MCol>
+    </MRow>
 </MContainer>
 
 
@@ -91,12 +85,12 @@
     private string PortStatusLed => CommandCommunicationService.IsPortOpen ? "green" : "red";
 
     private FramesList _sendFramesList, _receiveFramesList;
-    
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
         var invocationList = CommandCommunicationService.OnParseFrameDataAction?
-            .GetInvocationList();
+        .GetInvocationList();
         if (invocationList == null || !invocationList.Contains(UpdateSendFramesUi))
         {
             CommandCommunicationService.OnParseFrameDataAction += UpdateSendFramesUi;
@@ -125,7 +119,7 @@
                 ProtocolFrame.ParamData = ParamDataString.FloatStringToByteArray();
             }
         }
-        CommandCommunicationService.SendFrameData(ProtocolFrame); 
+        CommandCommunicationService.SendFrameData(ProtocolFrame);
         // InvokeAsync(() => _sendFramesList.ScrollToBottom());
         InvokeAsync(StateHasChanged);
     }

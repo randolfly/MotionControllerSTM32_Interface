@@ -56,13 +56,17 @@ public class CommandCommunicationService
         SerialPort.Read(data, 0, dataReceived);
         _protocolParserService.ProtocolDataReceive(ref data, (ushort)dataReceived);
     }
+    
+    /// <summary>
+    /// periodically execution, default period is 10Hz
+    /// </summary>
     private void ParseReceivedFrames()
     {
         _protocolParserService.ProtocolDataHandler();
         if (_protocolParserService.ProtocolFrame?.Command == ProtocolCommand.NullCmd) return;
         if (_protocolParserService.ProtocolFrame == null) return;
         ProtocolFrame = _protocolParserService.ProtocolFrame;
-        ReceivedProtocolFrameList.Add(_protocolParserService.ProtocolFrame.DeepClone());
+        ReceivedProtocolFrameList.Add(ProtocolFrame.DeepClone());
         switch (ProtocolFrame.Command)
         {
             case ProtocolCommand.DataLogSendAvailableDataCmd:

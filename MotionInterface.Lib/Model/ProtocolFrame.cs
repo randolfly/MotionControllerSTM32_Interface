@@ -98,5 +98,15 @@ public class ProtocolFrame
     {
         DateTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ms");
     }
+
+    public string SerializeParamData()
+    {
+        return Command switch
+        {
+            ProtocolCommand.DataLogSendAvailableDataCmd => ParamData.ByteArrayToNameString(),
+            ProtocolCommand.DataLogEchoLogDataCmd => ParamData.ByteArrayToNameString(),
+            _ => ParamData.ByteArrayToFloatString()
+        };
+    }
 }
 

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:MotionInterface"
         xmlns:blazor="clr-namespace:Microsoft.AspNetCore.Components.WebView.Wpf;assembly=Microsoft.AspNetCore.Components.WebView.Wpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="1000">
+        Title="MainWindow" Height="650" Width="1100">
     <Grid>
 
         <blazor:BlazorWebView HostPage="wwwroot\index.html" Services="{DynamicResource services}">
