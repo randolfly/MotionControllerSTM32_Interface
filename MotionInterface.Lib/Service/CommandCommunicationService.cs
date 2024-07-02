@@ -80,7 +80,7 @@ public class CommandCommunicationService
                 break;
             }
         }
-       
+
         OnParseFrameDataAction?.Invoke(ProtocolFrame);
     }
 
@@ -193,12 +193,6 @@ public class CommandCommunicationService
         return infos;
     }
     
-    public void SetReceiveBytesThreshold(int threshold)
-    {
-        // default is 1
-        SerialPort.ReceivedBytesThreshold = threshold;
-    }
-
     #endregion
     
     

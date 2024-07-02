@@ -17,6 +17,7 @@ public class DataCommunicationService
     {
         SerialPort.BaudRate = 921600;
         SerialPort.DataReceived += PortDataReceived;
+        SerialPort.ReadBufferSize = ProtocolConfig.ProtocolRecursiveBufferSize;
         // 5ms read once, and clear all data
         _periodicActionTimer = new PeriodicActionTimer(ParseReceivedFrames, 2);
     }
@@ -61,7 +62,7 @@ public class DataCommunicationService
         while (_protocolParserService.GetRemainLength() >= ProtocolConfig.ProtocolFrameMaxSize)
         {
             _protocolParserService.ProtocolDataHandler();
-            if (_protocolParserService.ProtocolFrame.Command != ProtocolCommand.DataLogRunningCmd) break;
+            if (_protocolParserService.ProtocolFrame.Command != ProtocolCommand.DataLogRunningCmd) continue;
             _protocolFrame = _protocolParserService.ProtocolFrame;
             ReceivedDataFrameList.Add(_protocolFrame);
         }

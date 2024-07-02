@@ -56,8 +56,22 @@ public class ProtocolFrame
             .Skip(offset).ToArray();
         Header = (ProtocolFrameHeader)BitConverter.ToUInt32(targetFrameData, ProtocolConfig.ProtocolFrameHeaderOffset);
         MotorId = (MotorId)targetFrameData[ProtocolConfig.ProtocolFrameMotorIdOffset];
-        Length = BitConverter.ToUInt16(targetFrameData, ProtocolConfig.ProtocolFrameLengthOffset);
         Command = (ProtocolCommand)BitConverter.ToUInt16(targetFrameData, ProtocolConfig.ProtocolFrameCommandOffset);
+
+        Length = BitConverter.ToUInt16(targetFrameData, ProtocolConfig.ProtocolFrameLengthOffset);
+        ushort totalRequiredLength = (ushort)(ProtocolConfig.ProtocolFrameHeaderSize + ProtocolConfig.ProtocolFrameChecksumSize);
+
+        if (Length < totalRequiredLength)
+        {
+            // Handle the error. For example, you could throw an exception with a meaningful message:
+            throw new InvalidOperationException("Length must be larger than the sum of ProtocolFrameHeaderSize and ProtocolFrameChecksumSize.");
+        }
+        else
+        {
+            // Proceed with your subtraction and other logic, since it's safe to do so.
+            ushort ParamDataSize = (ushort)(Length - totalRequiredLength);
+            // Continue with the logic that uses ParamDataSize
+        }
 
         ParamData = new byte[Length - ProtocolConfig.ProtocolFrameHeaderSize - ProtocolConfig.ProtocolFrameChecksumSize];
         Buffer.BlockCopy(targetFrameData,

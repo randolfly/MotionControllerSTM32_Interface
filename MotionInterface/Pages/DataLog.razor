@@ -75,7 +75,7 @@
 </MContainer>
 
 @code {
-    
+
     private Dictionary<string, FigureViewWindow> FigureViewWindowDictionary { get; set; } = new();
 
     private List<string> AvailableSymbolName => CommandCommunicationService.AvailableSymbolName;
@@ -85,13 +85,13 @@
         get => CommandCommunicationService.RecordSymbolName.ToStringNumber();
         set => OnRecordSymbolChanged(value);
     }
-    
+
     private void OnRecordSymbolChanged(List<StringNumber> symbolInfoPaths)
     {
         CommandCommunicationService.RecordSymbolName = symbolInfoPaths
             .Select(sn=>sn.ToString()).ToList()!;
     }
-    
+
     private List<StringNumber> GraphSymbolName
     {
         get => CommandCommunicationService.GraphSymbolName.ToStringNumber();
@@ -134,7 +134,7 @@
             PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
         }
 
-        InvokeAsync(StateHasChanged);
+        StateHasChanged();
     }
 
     private void StartRecordData()
