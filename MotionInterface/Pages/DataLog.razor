@@ -18,7 +18,7 @@
                         @bind-Values="RecordSymbolName"
                         Multiple
                         Color="indigo">
-                        @foreach (var symbol in CommandCommunicationService.AvailableSymbolName)
+                        @foreach (var symbol in AvailableSymbolName)
                         {
                         <MListItem @key="symbol" Value="symbol">
                             <MListItemContent>
@@ -77,7 +77,9 @@
 @code {
     
     private Dictionary<string, FigureViewWindow> FigureViewWindowDictionary { get; set; } = new();
-    
+
+    private List<string> AvailableSymbolName => CommandCommunicationService.AvailableSymbolName;
+
     private List<StringNumber> RecordSymbolName
     {
         get => CommandCommunicationService.RecordSymbolName.ToStringNumber();
@@ -99,7 +101,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        DataLogService.OnParseFrameDataAction = UpdateGraphViewData;
+        DataLogService.OnParseFrameDataAction += UpdateGraphViewData;
     }
 
     private void OnGraphSymbolChanged(List<StringNumber> symbolInfoPaths)
@@ -131,7 +133,8 @@
         {
             PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
         }
-        StateHasChanged();
+
+        InvokeAsync(StateHasChanged);
     }
 
     private void StartRecordData()
@@ -144,14 +147,18 @@
         // check echo record names right
         var recordName = CommandCommunicationService.RecordSymbolName;
         var echoName = CommandCommunicationService.EchoRecordSymbolName;
-        var checkPass = false;
+        recordName.Sort();
+        echoName.Sort();
+        var checkPass = true;
         if (recordName.Count == echoName.Count)
         {
-            for (var i = recordName.Count - 1; i >= 0; i--)
+            for (var i = 0;  i < recordName.Count; i++)
             {
-                if (echoName[i] == recordName[i]) continue;
-                checkPass = false;
-                break;
+                if (!string.Equals(recordName[i], echoName[i]))
+                {
+                    checkPass = false;
+                    break;
+                }
             }
         }
         if (checkPass)
@@ -159,8 +166,8 @@
             if (recordName.Count <= 0) return;
             ClearRecordData();
             CommandCommunicationService.StartRecordData();
-            DataLogService.StartDataLog();
             ShowGraphView(CommandCommunicationService.GraphSymbolName);
+            DataLogService.StartDataLog();
         }
         else
         {
@@ -195,6 +202,7 @@
 
     private void UpdateGraphViewData(int startId)
     {
+        if (FigureViewWindowDictionary.Count == 0) return;
         var recordSymbolData = DataLogService.RecordData;
         var endId = recordSymbolData.Count;
         var recordSymbolList = CommandCommunicationService.RecordSymbolName;
@@ -205,6 +213,7 @@
         {
             for (var numId = startId; numId < endId; numId++)
             {
+                // problem: FigureViewWindowDictionary is 0 size?
                 FigureViewWindowDictionary[graphSymbolList[graphSymbolId]]
                     .UpdateData(recordSymbolData[numId][graphSymbolId]);
             }

@@ -105,6 +105,7 @@ public class ProtocolFrame
         {
             ProtocolCommand.DataLogSendAvailableDataCmd => ParamData.ByteArrayToNameString(),
             ProtocolCommand.DataLogEchoLogDataCmd => ParamData.ByteArrayToNameString(),
+            ProtocolCommand.DataLogSetLogDataCmd => ParamData.ByteArrayToNameString(),
             _ => ParamData.ByteArrayToFloatString()
         };
     }

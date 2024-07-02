@@ -17,8 +17,8 @@ public class DataCommunicationService
     {
         SerialPort.BaudRate = 921600;
         SerialPort.DataReceived += PortDataReceived;
-        // 10ms read once, and clear all data
-        _periodicActionTimer = new PeriodicActionTimer(ParseReceivedFrames, 10);
+        // 5ms read once, and clear all data
+        _periodicActionTimer = new PeriodicActionTimer(ParseReceivedFrames, 2);
     }
 
     public bool IsPortOpen => SerialPort.IsOpen;

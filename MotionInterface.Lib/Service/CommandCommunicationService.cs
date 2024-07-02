@@ -156,7 +156,8 @@ public class CommandCommunicationService
     public static Dictionary<string, string> GetPortDetailsDictionary()
     {
         Dictionary<string, string> comDictionary = new();
-        var pattern = @"(?<info>.*)\((?<com>COM\d)\)$";
+        //note: only capture com00-99
+        var pattern = @"(?<info>.*)\((?<com>COM\d\d?)\)$";
         var coms = GetPortDetailsList();
         foreach (var com in coms)
         {

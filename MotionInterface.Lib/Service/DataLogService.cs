@@ -34,12 +34,14 @@ public class DataLogService
 
     public void StartDataLog()
     {
+        _dataCommunicationService.OpenPort();
         PeriodicActionTimer.StartTimer();
     }
 
     public void StopDataLog()
     {
         PeriodicActionTimer.StopTimer();
+        _dataCommunicationService.ClosePort();
     }
     
     private void UpdateRecordData()
@@ -56,11 +58,11 @@ public class DataLogService
     
     private async void BackupCsvLog()
     {
-        var backupFileName = DataLogConfig.TempFileFullName + ".tmp";
-        BackupLogEndId = RecordData.Where(d => d.Count > 0).Select(d => d.Count).Min();
-        await ExportCsvLog(backupFileName, BackupLogStartId, BackupLogEndId, ExportCsvTempWithHeader);
-        BackupLogStartId = BackupLogEndId;
-        ExportCsvTempWithHeader = false;
+        // var backupFileName = DataLogConfig.TempFileFullName + ".tmp";
+        // BackupLogEndId = RecordData.Where(d => d.Count > 0).Select(d => d.Count).Min();
+        // await ExportCsvLog(backupFileName, BackupLogStartId, BackupLogEndId, ExportCsvTempWithHeader);
+        // BackupLogStartId = BackupLogEndId;
+        // ExportCsvTempWithHeader = false;
     }
 
     private async Task ExportLog(string logDataFullName, string exportType)
