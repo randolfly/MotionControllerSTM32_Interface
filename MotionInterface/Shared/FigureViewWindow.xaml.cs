@@ -46,7 +46,7 @@ public partial class FigureViewWindow : System.Windows.Window
     }
 
 
-    private int MaxRenderLength { get; set; } = 2_000;
+    private int MaxRenderLength { get; set; } = 10_000;
 
     // private Crosshair Crosshair { get; }
     private Signal SignalPlot { get; set; }

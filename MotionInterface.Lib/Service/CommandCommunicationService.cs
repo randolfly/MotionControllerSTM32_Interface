@@ -6,11 +6,18 @@ using System.Text.RegularExpressions;
 
 namespace MotionInterface.Lib.Service;
 
+/// <summary>
+/// command uart port protocol send and receive service
+/// </summary>
 public class CommandCommunicationService
 {
     public readonly SerialPort SerialPort = new();
     public readonly List<ProtocolFrame> ReceivedProtocolFrameList = new ();
     public readonly List<ProtocolFrame> SendProtocolFrameList = new ();
+
+    /// <summary>
+    /// current protocol frame(for send and receive)
+    /// </summary>
     public ProtocolFrame ProtocolFrame = new();
     
     private readonly ProtocolParserService _protocolParserService = new();
@@ -19,19 +26,21 @@ public class CommandCommunicationService
     public List<string> AvailableSymbolName { get; set; } = new();
     public List<string> RecordSymbolName { get; set; } = new();
     public List<string> EchoRecordSymbolName { get; set; } = new();
-
     public List<string> GraphSymbolName { get; set; } = new();
     
     public CommandCommunicationService()
     {
         SerialPort.BaudRate = 115200;
+        SerialPort.ReadBufferSize = 4096;
         SerialPort.DataReceived += PortDataReceived;
         _periodicActionTimer = new PeriodicActionTimer(ParseReceivedFrames, 100);
     }
 
     public bool IsPortOpen => SerialPort.IsOpen;
-    
-    // extended action for the parsed frame data event
+
+    /// <summary>
+    /// extended action for the parsed frame data event
+    /// </summary>
     public Action<ProtocolFrame>? OnParseFrameDataAction { get; set; }
 
     #region SendFrameData
@@ -48,6 +57,11 @@ public class CommandCommunicationService
     
     #region ReceiveFrameData
 
+    /// <summary>
+    /// serial port DataReceived event handler
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
     private void PortDataReceived(object sender, SerialDataReceivedEventArgs args)
     {
         var dataReceived = ((SerialPort)sender).BytesToRead;
@@ -58,13 +72,14 @@ public class CommandCommunicationService
     }
     
     /// <summary>
+    /// parse the first received frame data.
     /// periodically execution, default period is 10Hz
     /// </summary>
     private void ParseReceivedFrames()
     {
         _protocolParserService.ProtocolDataHandler();
-        if (_protocolParserService.ProtocolFrame?.Command == ProtocolCommand.NullCmd) return;
         if (_protocolParserService.ProtocolFrame == null) return;
+        if (_protocolParserService.ProtocolFrame.Command == ProtocolCommand.NullCmd) return;
         ProtocolFrame = _protocolParserService.ProtocolFrame;
         ReceivedProtocolFrameList.Add(ProtocolFrame.DeepClone());
         switch (ProtocolFrame.Command)
@@ -186,7 +201,7 @@ public class CommandCommunicationService
             foreach (var hardInfo in hardInfos)
             {
                 if (hardInfo.Properties["Name"].Value == null) continue;
-                var deviceName = hardInfo.Properties["Name"].Value.ToString();
+                var deviceName = hardInfo.Properties["Name"].Value.ToString()!;
                 infos.Add(deviceName);
             }
         }

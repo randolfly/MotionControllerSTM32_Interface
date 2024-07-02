@@ -84,7 +84,7 @@
 
     private string PortStatusLed => CommandCommunicationService.IsPortOpen ? "green" : "red";
 
-    private FramesList _sendFramesList, _receiveFramesList;
+    private FramesList? _sendFramesList, _receiveFramesList;
 
     protected override void OnInitialized()
     {

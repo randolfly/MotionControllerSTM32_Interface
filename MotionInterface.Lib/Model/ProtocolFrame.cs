@@ -63,7 +63,6 @@ public class ProtocolFrame
 
         if (Length < totalRequiredLength)
         {
-            // Handle the error. For example, you could throw an exception with a meaningful message:
             throw new InvalidOperationException("Length must be larger than the sum of ProtocolFrameHeaderSize and ProtocolFrameChecksumSize.");
         }
         else

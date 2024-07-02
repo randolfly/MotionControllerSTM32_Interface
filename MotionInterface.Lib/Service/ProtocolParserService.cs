@@ -150,7 +150,10 @@ public class ProtocolParserService
 
             dataLen = FrameLen;
             cmd = (ProtocolCommand)GetFrameCmd(data, 0);
-            ProtocolFrame.DeserializeFrameData(ref data, 0);
+            if (cmd != NullCmd)
+            {
+                ProtocolFrame.DeserializeFrameData(ref data, 0);
+            }
             ReadOffset = (ushort)((ReadOffset + FrameLen) % ProtocolRecursiveBufferSize);
         }
         else

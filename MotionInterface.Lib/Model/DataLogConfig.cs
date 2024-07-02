@@ -30,6 +30,6 @@ public class DataLogConfig
 
 public enum DataExportTypes
 {
-    Csv,
-    Matlab
+    csv,
+    mat
 }

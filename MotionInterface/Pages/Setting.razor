@@ -1,6 +1,7 @@
 ﻿@page "/Setting"
 @page "/"
 
+
 @using MotionInterface.Lib.Service
 
 
@@ -8,13 +9,13 @@
     <MCol Cols="4">
         <MCard>
             <MCardTitle>CmdPort Config</MCardTitle>
-            <SerialPortConfig SerialPort="CommandCommunicationService.SerialPort"></SerialPortConfig>
+            <SerialComConfig SerialPort="CommandCommunicationService.SerialPort"></SerialComConfig>
         </MCard>
     </MCol>
     <MCol Cols="4">
         <MCard>
             <MCardTitle>LogPort Config</MCardTitle>
-            <SerialPortConfig SerialPort="DataCommunicationService.SerialPort"></SerialPortConfig>
+            <SerialComConfig SerialPort="DataCommunicationService.SerialPort"></SerialComConfig>
 
         </MCard>
     </MCol>
@@ -26,4 +27,27 @@
     private CommandCommunicationService CommandCommunicationService { get; set; } = default!;
     [Inject] 
     private DataCommunicationService DataCommunicationService { get; set; } = default!;
+    [Inject]
+    private AppConfigService AppConfigService { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        UpdateSerialPortConfig();
+    }
+
+    private void UpdateSerialPortConfig()
+    {
+        DataCommunicationService.SerialPort.PortName = AppConfigService.AppConfig.DatalogPortConfig.PortName;
+        DataCommunicationService.SerialPort.BaudRate = AppConfigService.AppConfig.DatalogPortConfig.BaudRate;
+        DataCommunicationService.SerialPort.DataBits = AppConfigService.AppConfig.DatalogPortConfig.DataBits;
+        DataCommunicationService.SerialPort.StopBits = AppConfigService.AppConfig.DatalogPortConfig.StopBits;
+        DataCommunicationService.SerialPort.Parity = AppConfigService.AppConfig.DatalogPortConfig.Parity;
+        
+        CommandCommunicationService.SerialPort.PortName = AppConfigService.AppConfig.CommandSerialPortConfig.PortName;
+        CommandCommunicationService.SerialPort.BaudRate = AppConfigService.AppConfig.CommandSerialPortConfig.BaudRate;
+        CommandCommunicationService.SerialPort.DataBits = AppConfigService.AppConfig.CommandSerialPortConfig.DataBits;
+        CommandCommunicationService.SerialPort.StopBits = AppConfigService.AppConfig.CommandSerialPortConfig.StopBits;
+        CommandCommunicationService.SerialPort.Parity = AppConfigService.AppConfig.CommandSerialPortConfig.Parity;
+        
+    }
 }

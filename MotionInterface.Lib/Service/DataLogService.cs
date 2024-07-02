@@ -11,15 +11,23 @@ public class DataLogService
 {
     private readonly DataCommunicationService _dataCommunicationService;
     private readonly CommandCommunicationService _commandCommunicationService;
+    private readonly AppConfigService _appConfigService;
     
-    public DataLogService(DataCommunicationService dataCommunicationService, CommandCommunicationService commandCommunicationService)
+    public DataLogService(DataCommunicationService dataCommunicationService, 
+        CommandCommunicationService commandCommunicationService,
+        AppConfigService appConfigService)
     {
         _dataCommunicationService = dataCommunicationService;
         _commandCommunicationService = commandCommunicationService;
+        _appConfigService = appConfigService;
         _dataCommunicationService.OnParseFrameDataAction = UpdateRecordData;
         PeriodicActionTimer = new PeriodicActionTimer(BackupCsvLog);
     }
 
+    /// <summary>
+    /// record data list, shape: [symbol count, data count], float data
+    /// example: 3 symbol data, 1000 data count, shape: [1000, 3]
+    /// </summary>
     public List<List<float>> RecordData { get; } = new();
     
     // todo: Add recurrent save file action
@@ -34,12 +42,14 @@ public class DataLogService
 
     public void StartDataLog()
     {
+        BackupLogStartId = 0;
         _dataCommunicationService.OpenPort();
         PeriodicActionTimer.StartTimer();
     }
 
     public void StopDataLog()
     {
+        // stop tmp data export
         PeriodicActionTimer.StopTimer();
         _dataCommunicationService.ClosePort();
     }
@@ -58,21 +68,21 @@ public class DataLogService
     
     private async void BackupCsvLog()
     {
-        // var backupFileName = DataLogConfig.TempFileFullName + ".tmp";
-        // BackupLogEndId = RecordData.Where(d => d.Count > 0).Select(d => d.Count).Min();
-        // await ExportCsvLog(backupFileName, BackupLogStartId, BackupLogEndId, ExportCsvTempWithHeader);
-        // BackupLogStartId = BackupLogEndId;
-        // ExportCsvTempWithHeader = false;
+        var backupFileName = DataLogConfig.TempFileFullName + ".tmp";
+        BackupLogEndId = RecordData.Count;
+        await ExportCsvLog(backupFileName, BackupLogStartId, BackupLogEndId, ExportCsvTempWithHeader);
+        BackupLogStartId = BackupLogEndId;
+        ExportCsvTempWithHeader = false;
     }
 
-    private async Task ExportLog(string logDataFullName, string exportType)
+    public async Task ExportLog(string logDataFullName, DataExportTypes exportType)
     {
         switch (exportType)
         {
-            case "csv":
+            case DataExportTypes.csv:
                 await ExportCsvLog(logDataFullName);
                 break;
-            case "mat":
+            case DataExportTypes.mat:
                 await ExportMatLog(logDataFullName);
                 break;
         }
@@ -106,31 +116,30 @@ public class DataLogService
             sb.AppendLine(string.Join(',', _commandCommunicationService.RecordSymbolName));
         }
 
-        var maxLength = RecordData.Where(d => d.Count > 0).Select(d => d.Count).Min();
-        endId = endId < maxLength ? endId : maxLength;
         for (var i = startId; i < endId; i++)
-            sb.AppendLine($"{string.Join(',', RecordData.Select(d => d[i].ToString(CultureInfo.InvariantCulture)))}");
+            sb.AppendLine(string.Join(',', RecordData[i].Select(s=>s.ToString(CultureInfo.InvariantCulture))));
         return sb.ToString();
     }
 
     private string GetRecordString()
     {
         var sb = new StringBuilder();
-        var maxLength = RecordData.Where(d => d.Count > 0).Select(d => d.Count).Min();
+        var maxLength = RecordData.Count;
         sb.AppendLine(string.Join(',', _commandCommunicationService.RecordSymbolName));
         for (var i = 0; i < maxLength; i++)
-            sb.AppendLine($"{string.Join(',', RecordData.Select(d => d[i].ToString(CultureInfo.InvariantCulture)))}");
+            sb.AppendLine(string.Join(',', RecordData[i].Select(s => s.ToString(CultureInfo.InvariantCulture))));
         return sb.ToString();
     }
 
     private Dictionary<string, Matrix<float>> GetRecordMatDict()
     {
         var exportMatDict = new Dictionary<string, Matrix<float>>();
-        var maxLength = RecordData.Where(d => d.Count > 0).Select(d => d.Count).Min();
+        var maxLength = RecordData.Count;
         for (var i = 0; i < _commandCommunicationService.RecordSymbolName.Count; i++)
         {
-            exportMatDict.Add(_commandCommunicationService.RecordSymbolName[i].Replace(".", "_"),
-                Matrix<float>.Build.Dense(maxLength, 1, RecordData[i].Take(maxLength).ToArray()));
+            var recordSymbolData = Matrix<float>.Build
+                .Dense(maxLength, 1, RecordData.Select(d => d[i]).ToArray());
+            exportMatDict.Add(_commandCommunicationService.RecordSymbolName[i].Replace(".", "_"), recordSymbolData);
         }
 
         return exportMatDict;

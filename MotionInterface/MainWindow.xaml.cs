@@ -28,6 +28,7 @@ public partial class MainWindow : Window
         serviceCollection.AddSingleton<CommandCommunicationService>();
         serviceCollection.AddSingleton<DataCommunicationService>();
         serviceCollection.AddSingleton<DataLogService>();
+        serviceCollection.AddSingleton<AppConfigService>();
 
 #if DEBUG
         serviceCollection.AddBlazorWebViewDeveloperTools();

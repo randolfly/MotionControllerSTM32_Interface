@@ -19,7 +19,7 @@ public class PeriodicActionTimer
     {
         _timer = new Timer(TimeInterval);
         // Hook up the Elapsed event for the timer. 
-        _timer.Elapsed += OnTimedEvent;
+        _timer.Elapsed += OnTimedEvent!;
         _timer.AutoReset = true;
         _timer.Enabled = true;
     }

@@ -18,26 +18,17 @@ public class DataCommunicationService
         SerialPort.BaudRate = 921600;
         SerialPort.DataReceived += PortDataReceived;
         SerialPort.ReadBufferSize = ProtocolConfig.ProtocolRecursiveBufferSize;
-        // 5ms read once, and clear all data
-        _periodicActionTimer = new PeriodicActionTimer(ParseReceivedFrames, 2);
+        // 1ms read once, and clear all data
+        _periodicActionTimer = new PeriodicActionTimer(ParseReceivedFrames, 1);
     }
 
     public bool IsPortOpen => SerialPort.IsOpen;
-    
-    // extended action for the parsed frame data event
-    public Action? OnParseFrameDataAction { get; set; }
-    
-    #region SendFrameData
 
-    public void SendFrameData(ProtocolFrame protocolFrame)
-    {
-        var data = new byte[ProtocolConfig.ProtocolFrameMaxSize];
-        protocolFrame.SerializeFrameData(ref data);
-        SerialPort.Write(data, 0, protocolFrame.Length);
-    }
-    
-    #endregion
-    
+    /// <summary>
+    /// extended action for the parsed frame data event
+    /// </summary>
+    public Action? OnParseFrameDataAction { get; set; }
+
     #region ReceiveFrameData
 
     /// <summary>
@@ -55,7 +46,7 @@ public class DataCommunicationService
     }
     
     /// <summary>
-    /// PeriodicActionTimer callback, default 10ms /execution
+    /// PeriodicActionTimer callback, default 1kHz execution
     /// </summary>
     private void ParseReceivedFrames()
     {
@@ -63,7 +54,7 @@ public class DataCommunicationService
         {
             _protocolParserService.ProtocolDataHandler();
             if (_protocolParserService.ProtocolFrame.Command != ProtocolCommand.DataLogRunningCmd) continue;
-            _protocolFrame = _protocolParserService.ProtocolFrame;
+            _protocolFrame = _protocolParserService.ProtocolFrame;  // here we dont use deepclone because the target param data is already been cloned inside the handler()
             ReceivedDataFrameList.Add(_protocolFrame);
         }
         // extension action
@@ -103,11 +94,6 @@ public class DataCommunicationService
         }
     }
     
-    public void SetReceiveBytesThreshold(int threshold)
-    {
-        // default is 1
-        SerialPort.ReceivedBytesThreshold = threshold;
-    }
 
     #endregion
     

@@ -75,7 +75,7 @@
 </MContainer>
 
 @code {
-
+    
     private Dictionary<string, FigureViewWindow> FigureViewWindowDictionary { get; set; } = new();
 
     private List<string> AvailableSymbolName => CommandCommunicationService.AvailableSymbolName;
@@ -147,8 +147,6 @@
         // check echo record names right
         var recordName = CommandCommunicationService.RecordSymbolName;
         var echoName = CommandCommunicationService.EchoRecordSymbolName;
-        recordName.Sort();
-        echoName.Sort();
         var checkPass = true;
         if (recordName.Count == echoName.Count)
         {
@@ -183,19 +181,25 @@
         FigureViewWindowDictionary.Clear();
     }
 
-    private void StopRecordData()
+    private async void StopRecordData()
     {
         if (!CommandCommunicationService.IsPortOpen)
         {
-            PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
+            await PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
             return;
         }
         CommandCommunicationService.StopRecordData();
         DataLogService.StopDataLog();
-        
+
+        RecordSymbolName.Clear();
         foreach (var figureViewWindow in FigureViewWindowDictionary.Values)
         {
             figureViewWindow.ScaleRangeToMax();
+        }
+
+        foreach (var exportType in DataLogService.DataLogConfig.DataExportTypes)
+        {
+            await DataLogService.ExportLog(DataLogService.DataLogConfig.RecordFileFullName + "." + exportType, exportType);
         }
         StateHasChanged();
     }
