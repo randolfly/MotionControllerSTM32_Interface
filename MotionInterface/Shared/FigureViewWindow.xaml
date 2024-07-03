@@ -46,7 +46,7 @@
         HorizontalAlignment="Center"
         VerticalAlignment="Center"
         FontSize="16"
-        Text="ms" />
+        Text="point" />
     </Grid>
   </Grid>
 </Window>
