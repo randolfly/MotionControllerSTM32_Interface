@@ -8,74 +8,170 @@
 @inject IPopupService PopupService
 @inject CommandCommunicationService CommandCommunicationService
 @inject DataLogService DataLogService
+@inject AppConfigService AppConfigService
+
+
+<MCard Style="height:100%">
+    <MTabs @bind-Value="_tabs" Centered Grow>
+        <MTab>
+            <MCol>
+                <MIcon Icon="@("mdi-connection")"/>
+                DataLog Config
+            </MCol>
+        </MTab>
+        <MTab>
+            <MCol>
+                <MIcon Icon="@("mdi-content-save")"/>
+                DataLog Operation
+            </MCol>
+        </MTab>
+    </MTabs>
+
+    <MTabsItems Value="_tabs">
+        <MTabItem>
+            <MCard Flat>
+                <MCardText>
+                    <MContainer>
+                        <MRow>
+                            <MCol Cols="12" Sm="6">
+                                <MTextField @bind-Value="DataLogConfig.DataLogFolderName" Label="Folder"
+                                            TValue="string">
+                                </MTextField>
+                            </MCol>
+                            <MCol Cols="12" Sm="6">
+                                <MTextField @bind-Value="DataLogConfig.DataLogFileName" Label="FileName"
+                                            TValue="string">
+                                </MTextField>
+                            </MCol>
+                            <MCol Cols="12"
+                                  Sm="6">
+                                <MSelect @bind-Value="DataLogConfig.DataExportTypes"
+                                         Items="Enum.GetValues<DataExportTypes>().ToList()"
+                                         Chips
+                                         ItemText="u => u.ToString()"
+                                         ItemValue="u => u"
+                                         Label="DataExportType"
+                                         Multiple>
+                                </MSelect>
+                            </MCol>
+                        </MRow>
+                    </MContainer>
+                </MCardText>
+            </MCard>
+
+        </MTabItem>
+        <MTabItem>
+            <MCard Flat>
+                <MCardText>
+                    <MContainer>
+                            <MRow Style="min-height:200px">
+                                <MCol Cols="12" Md="6">
+                                    <MCard Class="mx-auto">
+                                        <MList Dense>
+                                            <MListItemGroup @bind-Values="RecordSymbolName"
+                                                            Multiple
+                                                            Color="indigo">
+                                                @foreach (var symbol in AvailableSymbolName)
+                                                {
+                                                    <MListItem @key="symbol" Value="symbol">
+                                                        <MListItemContent>
+                                                            <MListItemTitle>@symbol</MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                }
+                                            </MListItemGroup>
+                                        </MList>
+                                    </MCard>
+                                </MCol>
+                                <MCol Cols="12" Md="6">
+                                    <MCard Class="mx-auto">
+                                        <MList Dense>
+                                            <MListItemGroup @bind-Values="GraphSymbolName"
+                                                            Multiple
+                                                            Color="indigo">
+                                                @foreach (var symbol in RecordSymbolName)
+                                                {
+                                                    <MListItem @key="symbol" Value="symbol">
+                                                        <MListItemContent>
+                                                            <MListItemTitle>@symbol</MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                }
+                                            </MListItemGroup>
+                                        </MList>
+                                    </MCard>
+                                </MCol>
+                            </MRow>
+                            <MRow NoGutters Style="margin-top: 10px;">
+                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
+                                    <MButton Flat Dark
+                                             OnClick="CommandCommunicationService.OpenPort">
+                                        OpenCommandPort
+                                    </MButton>
+                                </MCol>
+                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
+                                    <MButton Flat Dark
+                                             OnClick="CommandCommunicationService.ClosePort">
+                                        CloseCommandPort
+                                    </MButton>
+                                </MCol>
+                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
+                                    <MButton Flat Dark
+                                        OnClick="GetAvailableRecordDataNames">
+                                        GetAvailable
+                                    </MButton>
+                                </MCol>
+                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
+                                <MButton Flat Dark
+                                    Color="primary" OnClick="SetRecordDataNames">
+                                        SetRecord
+                                    </MButton>
+                                </MCol>
+                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
+                                    <MButton Flat Dark 
+                                        Color="primary" OnClick="StartRecordData">
+                                        StartRecord
+                                    </MButton>
+                                </MCol>
+                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
+                                <MButton Flat Dark
+                                        Color="primary" OnClick="StopRecordData">
+                                        StopRecord
+                                    </MButton>
+                                </MCol>
+                            <MCol Cols="4" Class="d-flex justify-center">
+                                <MButton Flat Dark Color="primary"
+                                         OnClick="OnSaveConfig"
+                                         Style="margin-right: 5px;">
+                                    <MIcon Icon="@("mdi-content-save")" />
+                                    Save Config
+                                </MButton>
+                            </MCol>
+                            <MCol Cols="4" Class="d-flex justify-center">
+                                <MButton Flat Dark Color="primary"
+                                         OnClick="OnLoadConfig"
+                                         Style="margin-right: 5px;">
+                                    <MIcon Icon="@("mdi-upload")" />
+                                    Load Config
+                                </MButton>
+                            </MCol>
+                            </MRow>
+                    </MContainer>
+                </MCardText>
+            </MCard>
+        </MTabItem>
+    </MTabsItems>
+</MCard>
 
 <MContainer Fluid Class="fill-height">
-    <MRow Style="min-height:200px">
-        <MCol Cols="12" Md="6">
-            <MCard Class="mx-auto">
-                <MList Dense>
-                    <MListItemGroup
-                        @bind-Values="RecordSymbolName"
-                        Multiple
-                        Color="indigo">
-                        @foreach (var symbol in AvailableSymbolName)
-                        {
-                        <MListItem @key="symbol" Value="symbol">
-                            <MListItemContent>
-                                <MListItemTitle>@symbol</MListItemTitle>
-                            </MListItemContent>
-                        </MListItem>
-                        }
-                    </MListItemGroup>
-                </MList>
-            </MCard>
-        </MCol>
-        <MCol Cols="12" Md="6">
-            <MCard Class="mx-auto">
-                <MList Dense>
-                    <MListItemGroup
-                        @bind-Values="GraphSymbolName"
-                        Multiple
-                        Color="indigo">
-                        @foreach (var symbol in RecordSymbolName)
-                        {
-                        <MListItem @key="symbol" Value="symbol">
-                            <MListItemContent>
-                                <MListItemTitle>@symbol</MListItemTitle>
-                            </MListItemContent>
-                        </MListItem>
-                        }
-                    </MListItemGroup>
-                </MList>
-            </MCard>
-        </MCol>
-    </MRow>
-    <MRow NoGutters Style="margin-top: 10px;">
-        <MCol Cols="3" Style="display: flex;justify-content:space-around">
-            <MButton Color="primary" OnClick="GetAvailableRecordDataNames">
-                GetAvailable
-            </MButton>
-        </MCol>
-        <MCol Cols="3" Style="display: flex;justify-content:space-around">
-            <MButton Color="primary"  OnClick="SetRecordDataNames">
-                SetRecord
-            </MButton>
-        </MCol>
-        <MCol Cols="3" Style="display: flex;justify-content:space-around">
-            <MButton Color="primary"  OnClick="StartRecordData">
-                StartRecord
-            </MButton>
-        </MCol>
-        <MCol Cols="3" Style="display: flex;justify-content:space-around">
-            <MButton Color="primary"  OnClick="StopRecordData">
-                StopRecord
-            </MButton>
-        </MCol>
-    </MRow>
+    
 </MContainer>
 
 @code {
-    
+    public StringNumber _tabs;
+    private AppConfig AppConfig { get; set; }
+    private DataLogConfig DataLogConfig { get; set; }
+
     private Dictionary<string, FigureViewWindow> FigureViewWindowDictionary { get; set; } = new();
 
     private List<string> AvailableSymbolName => CommandCommunicationService.AvailableSymbolName;
@@ -90,6 +186,7 @@
     {
         CommandCommunicationService.RecordSymbolName = symbolInfoPaths
             .Select(sn=>sn.ToString()).ToList()!;
+        SaveAppConfig();
     }
 
     private List<StringNumber> GraphSymbolName
@@ -98,17 +195,21 @@
         set => OnGraphSymbolChanged(value);
     }
 
+    private void OnGraphSymbolChanged(List<StringNumber> symbolInfoPaths) {
+        CommandCommunicationService.GraphSymbolName = symbolInfoPaths
+            .Select(sn => sn.ToString()).ToList()!;
+        SaveAppConfig();
+    }
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
         DataLogService.OnParseFrameDataAction += UpdateGraphViewData;
+        LoadAppConfig();
+        PopupService.EnqueueSnackbarAsync("Initialized Finished!");
     }
 
-    private void OnGraphSymbolChanged(List<StringNumber> symbolInfoPaths)
-    {
-        CommandCommunicationService.GraphSymbolName = symbolInfoPaths
-            .Select(sn=>sn.ToString()).ToList()!;
-    }
+
 
     private void SetRecordDataNames()
     {
@@ -211,7 +312,7 @@
         var endId = recordSymbolData.Count;
         var recordSymbolList = CommandCommunicationService.RecordSymbolName;
         var graphSymbolList = CommandCommunicationService.GraphSymbolName;
-        
+
         var graphSymbolIndex = recordSymbolList.FindSubStringListIndex(graphSymbolList);
         for (var graphSymbolId = 0;  graphSymbolId < graphSymbolList.Count; graphSymbolId++)
         {
@@ -243,7 +344,7 @@
             figureViewWindow.Show();
         }
     }
-    
+
     private static (double x, double y) GetGraphViewWindowPos(int id, int windowNum, int windowWidth = 600,
         int windowHeight = 300)
     {
@@ -252,6 +353,36 @@
         var left = desktopWorkingArea.Right - ((int)(id / windowRowSize) + 1) * windowWidth;
         var top = desktopWorkingArea.Bottom - (id % windowRowSize + 1) * windowHeight;
         return (left, top);
+    }
+
+
+    private void OnLoadConfig() {
+        if (!CommandCommunicationService.IsPortOpen) return;
+        if (AvailableSymbolName.Count <= 0) return;
+        AppConfigService.UpdateConfiguration();
+        LoadAppConfig();
+
+        RecordSymbolName = DataLogConfig.RecordSymbolName.Select(s=>s.ToStringNumber()).ToList();
+        GraphSymbolName = DataLogConfig.GraphSymbolName.Select(s=>s.ToStringNumber()).ToList();
+
+        StateHasChanged();
+    }
+
+    private void OnSaveConfig() {
+        SaveAppConfig();
+    }
+
+    private void SaveAppConfig() {
+        DataLogConfig.RecordSymbolName = RecordSymbolName.Select(s=>s.ToString()!).ToList();
+        DataLogConfig.GraphSymbolName = GraphSymbolName.Select(s=>s.ToString()!).ToList();
+        AppConfigService.SaveConfiguration(AppConfig);
+        // PopupService.EnqueueSnackbarAsync("Save AppConfig");
+    }
+
+    private void LoadAppConfig() {
+        AppConfig = AppConfigService.AppConfig;
+        DataLogConfig = AppConfigService.AppConfig.DataLogConfig;
+        PopupService.EnqueueSnackbarAsync("Load AppConfig");
     }
 
 }

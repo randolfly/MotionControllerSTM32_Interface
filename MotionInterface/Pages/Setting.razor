@@ -20,6 +20,16 @@
         </MCard>
     </MCol>
 </MRow>
+<MRow>
+    <MCol Cols="4" Class="d-flex justify-center">
+        <MButton Flat Dark Color="primary"
+                 OnClick="OnSaveConfig"
+                 Style="margin-right: 5px;">
+            <MIcon Icon="@("mdi-content-save")" />
+            Save Config
+        </MButton>
+    </MCol>
+</MRow>
 
 
 @code {
@@ -32,6 +42,7 @@
 
     protected override void OnInitialized()
     {
+        AppConfigService.UpdateConfiguration();
         UpdateSerialPortConfig();
     }
 
@@ -42,12 +53,37 @@
         DataCommunicationService.SerialPort.DataBits = AppConfigService.AppConfig.DatalogPortConfig.DataBits;
         DataCommunicationService.SerialPort.StopBits = AppConfigService.AppConfig.DatalogPortConfig.StopBits;
         DataCommunicationService.SerialPort.Parity = AppConfigService.AppConfig.DatalogPortConfig.Parity;
-        
+
         CommandCommunicationService.SerialPort.PortName = AppConfigService.AppConfig.CommandSerialPortConfig.PortName;
         CommandCommunicationService.SerialPort.BaudRate = AppConfigService.AppConfig.CommandSerialPortConfig.BaudRate;
         CommandCommunicationService.SerialPort.DataBits = AppConfigService.AppConfig.CommandSerialPortConfig.DataBits;
         CommandCommunicationService.SerialPort.StopBits = AppConfigService.AppConfig.CommandSerialPortConfig.StopBits;
         CommandCommunicationService.SerialPort.Parity = AppConfigService.AppConfig.CommandSerialPortConfig.Parity;
-        
+    }
+
+    private void SaveSerialPortConfig()
+    {
+        AppConfigService.AppConfig.DatalogPortConfig.PortName = DataCommunicationService.SerialPort.PortName;
+        AppConfigService.AppConfig.DatalogPortConfig.BaudRate = DataCommunicationService.SerialPort.BaudRate;
+        AppConfigService.AppConfig.DatalogPortConfig.DataBits = DataCommunicationService.SerialPort.DataBits;
+        AppConfigService.AppConfig.DatalogPortConfig.StopBits = DataCommunicationService.SerialPort.StopBits;
+        AppConfigService.AppConfig.DatalogPortConfig.Parity = DataCommunicationService.SerialPort.Parity;
+
+        AppConfigService.AppConfig.CommandSerialPortConfig.PortName = CommandCommunicationService.SerialPort.PortName;
+        AppConfigService.AppConfig.CommandSerialPortConfig.BaudRate = CommandCommunicationService.SerialPort.BaudRate;
+        AppConfigService.AppConfig.CommandSerialPortConfig.DataBits = CommandCommunicationService.SerialPort.DataBits;
+        AppConfigService.AppConfig.CommandSerialPortConfig.StopBits = CommandCommunicationService.SerialPort.StopBits;
+        AppConfigService.AppConfig.CommandSerialPortConfig.Parity = CommandCommunicationService.SerialPort.Parity;
+    }
+
+
+    private void OnSaveConfig() {
+        SaveAppConfig();
+    }
+
+    private void SaveAppConfig()
+    {
+        SaveSerialPortConfig();
+        AppConfigService.SaveConfiguration(AppConfigService.AppConfig);
     }
 }
