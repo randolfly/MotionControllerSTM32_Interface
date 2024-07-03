@@ -34,8 +34,10 @@
                     <MContainer>
                         <MRow>
                             <MCol Cols="12" Sm="6">
-                                <MTextField @bind-Value="DataLogConfig.DataLogFolderName" Label="Folder"
-                                            TValue="string">
+                                <MTextField @bind-Value="DataLogConfig.DataLogFolderName"
+                                    OnAppendOuterClick="PickDatalogFolder"
+                                    Label="Folder" AppendOuterIcon="mdi-map-marker"
+                                    TValue="string">
                                 </MTextField>
                             </MCol>
                             <MCol Cols="12" Sm="6">
@@ -187,6 +189,16 @@
         CommandCommunicationService.RecordSymbolName = symbolInfoPaths
             .Select(sn=>sn.ToString()).ToList()!;
         SaveAppConfig();
+    }
+
+    private void PickDatalogFolder() {
+        var folder = FolderPicker.DisplayFolderPicker();
+        if (folder != null)
+        {
+            DataLogConfig.DataLogFolderName = folder;
+            SaveAppConfig();
+        }
+        InvokeAsync(StateHasChanged);
     }
 
     private List<StringNumber> GraphSymbolName

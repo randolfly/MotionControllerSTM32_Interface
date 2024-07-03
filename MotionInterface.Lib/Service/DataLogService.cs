@@ -22,6 +22,8 @@ public class DataLogService
         _appConfigService = appConfigService;
         _dataCommunicationService.OnParseFrameDataAction = UpdateRecordData;
         PeriodicActionTimer = new PeriodicActionTimer(BackupCsvLog);
+
+        DataLogConfig = _appConfigService.AppConfig.DataLogConfig;
     }
 
     /// <summary>
@@ -68,7 +70,7 @@ public class DataLogService
     
     private async void BackupCsvLog()
     {
-        var backupFileName = DataLogConfig.TempFileFullName + ".tmp";
+        var backupFileName = _appConfigService.AppConfig.DataLogConfig.TempFileFullName + ".tmp";
         BackupLogEndId = RecordData.Count;
         await ExportCsvLog(backupFileName, BackupLogStartId, BackupLogEndId, ExportCsvTempWithHeader);
         BackupLogStartId = BackupLogEndId;

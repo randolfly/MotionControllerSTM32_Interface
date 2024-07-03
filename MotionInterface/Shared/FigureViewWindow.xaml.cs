@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using ScottPlot;
 using ScottPlot.Plottables;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace MotionInterface.Shared;
 
