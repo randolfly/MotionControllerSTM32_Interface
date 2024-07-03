@@ -193,10 +193,7 @@
 
     private void PickDatalogFolder() {
         var folder = FolderPicker.DisplayFolderPicker();
-        if (folder != null)
-        {
-            DataLogConfig.DataLogFolderName = folder;
-        }
+        DataLogConfig.DataLogFolderName = folder;
         InvokeAsync(StateHasChanged);
     }
 
@@ -205,10 +202,19 @@
         get => CommandCommunicationService.GraphSymbolName.ToStringNumber();
         set => OnGraphSymbolChanged(value);
     }
-
+    
+    private List<int> GraphSymbolDataIdList { get; set; }
+    
     private void OnGraphSymbolChanged(List<StringNumber> symbolInfoPaths) {
         CommandCommunicationService.GraphSymbolName = symbolInfoPaths
             .Select(sn => sn.ToString()).ToList()!;
+        // search graph data id
+        GraphSymbolDataIdList = new List<int>(CommandCommunicationService.GraphSymbolName.Count);
+        foreach (var graphSymbol in CommandCommunicationService.GraphSymbolName)
+        {
+            GraphSymbolDataIdList.Add(CommandCommunicationService.RecordSymbolName
+                .FindIndex(s => s.Equals(graphSymbol)));
+        }
         SaveAppConfig();
     }
 
@@ -220,9 +226,7 @@
         LoadAppConfig();
         PopupService.EnqueueSnackbarAsync("Initialized Finished!");
     }
-
-
-
+    
     private void SetRecordDataNames()
     {
         if (CommandCommunicationService.IsPortOpen)
@@ -267,11 +271,9 @@
         {
             for (var i = 0;  i < recordName.Count; i++)
             {
-                if (!string.Equals(recordName[i], echoName[i]))
-                {
-                    checkPass = false;
-                    break;
-                }
+                if (string.Equals(recordName[i], echoName[i])) continue;
+                checkPass = false;
+                break;
             }
         }
         if (checkPass)
@@ -316,7 +318,7 @@
         {
             await DataLogService.ExportLog(DataLogService.DataLogConfig.RecordFileFullName + "." + exportType, exportType);
         }
-        InvokeAsync(StateHasChanged);
+        await InvokeAsync(StateHasChanged);
     }
 
     private void UpdateGraphViewData(int startId)
@@ -327,14 +329,13 @@
         var recordSymbolList = CommandCommunicationService.RecordSymbolName;
         var graphSymbolList = CommandCommunicationService.GraphSymbolName;
 
-        var graphSymbolIndex = recordSymbolList.FindSubStringListIndex(graphSymbolList);
         for (var graphSymbolId = 0;  graphSymbolId < graphSymbolList.Count; graphSymbolId++)
         {
+            var graphDataId = GraphSymbolDataIdList[graphSymbolId];
             for (var numId = startId; numId < endId; numId++)
             {
-                // problem: FigureViewWindowDictionary is 0 size?
                 FigureViewWindowDictionary[graphSymbolList[graphSymbolId]]
-                    .UpdateData(recordSymbolData[numId][graphSymbolId]);
+                    .UpdateData(recordSymbolData[numId][graphDataId]);
             }
         }
     }

@@ -83,7 +83,6 @@ public class CommandCommunicationService
     private void ParseReceivedFrames()
     {
         _protocolParserService.ProtocolDataHandler();
-        if (_protocolParserService.ProtocolFrame == null) return;
         if (_protocolParserService.ProtocolFrame.Command == ProtocolCommand.NullCmd) return;
         ProtocolFrame = _protocolParserService.ProtocolFrame;
         ReceivedProtocolFrameList.Add(ProtocolFrame.DeepClone());
