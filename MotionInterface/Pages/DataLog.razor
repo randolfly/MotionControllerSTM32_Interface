@@ -103,58 +103,62 @@
                                 </MCol>
                             </MRow>
                             <MRow NoGutters Style="margin-top: 10px;">
-                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
-                                    <MButton Flat Dark
+                                <MCol Cols="3" Style="display: flex;justify-content:space-around">
+                                <MButton Flat class="red lighten-1" Dark
                                              OnClick="CommandCommunicationService.OpenPort">
                                         OpenCommandPort
                                     </MButton>
                                 </MCol>
-                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
-                                    <MButton Flat Dark
+                                <MCol Cols="3" Style="display: flex;justify-content:space-around">
+                                <MButton Flat class="green lighten-1" Dark
                                              OnClick="CommandCommunicationService.ClosePort">
                                         CloseCommandPort
                                     </MButton>
                                 </MCol>
-                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
-                                    <MButton Flat Dark
+                                <MCol Cols="3" Class="d-flex justify-center">
+                                    <MButton Flat Dark Color="blue lighten-1"
+                                             OnClick="OnSaveConfig"
+                                             Style="margin-right: 5px;">
+                                        <MIcon Icon="@("mdi-content-save")" />
+                                        Save Config
+                                    </MButton>
+                                </MCol>
+                                <MCol Cols="3" Class="d-flex justify-center">
+                                <MButton Flat Dark Color="cyan lighten-1"
+                                             OnClick="OnLoadConfig"
+                                             Style="margin-right: 5px;">
+                                        <MIcon Icon="@("mdi-upload")" />
+                                        Load Config
+                                    </MButton>
+                                </MCol>
+                            </MRow>
+                            <MRow NoGutters Style="margin-top: 10px;">
+
+                                <MCol Cols="3" Style="display: flex;justify-content:space-around">
+                                <MButton Flat class="amber lighten-1"
                                         OnClick="GetAvailableRecordDataNames">
                                         GetAvailable
                                     </MButton>
                                 </MCol>
-                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
-                                <MButton Flat Dark
+                                <MCol Cols="3" Style="display: flex;justify-content:space-around">
+                                <MButton Flat Class="deep-orange lighten-1"
                                     Color="primary" OnClick="SetRecordDataNames">
                                         SetRecord
                                     </MButton>
                                 </MCol>
-                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
-                                    <MButton Flat Dark 
-                                        Color="primary" OnClick="StartRecordData">
+                                <MCol Cols="3" Style="display: flex;justify-content:space-around">
+                                <MButton Flat Class="brown lighten-1"
+                                         Color="primary" OnClick="StartRecordData">
                                         StartRecord
                                     </MButton>
                                 </MCol>
-                                <MCol Cols="4" Style="display: flex;justify-content:space-around">
-                                <MButton Flat Dark
+                                <MCol Cols="3" Style="display: flex;justify-content:space-around">
+                                <MButton Flat Class="blue-grey lighten-1"
                                         Color="primary" OnClick="StopRecordData">
                                         StopRecord
                                     </MButton>
                                 </MCol>
-                            <MCol Cols="4" Class="d-flex justify-center">
-                                <MButton Flat Dark Color="primary"
-                                         OnClick="OnSaveConfig"
-                                         Style="margin-right: 5px;">
-                                    <MIcon Icon="@("mdi-content-save")" />
-                                    Save Config
-                                </MButton>
-                            </MCol>
-                            <MCol Cols="4" Class="d-flex justify-center">
-                                <MButton Flat Dark Color="primary"
-                                         OnClick="OnLoadConfig"
-                                         Style="margin-right: 5px;">
-                                    <MIcon Icon="@("mdi-upload")" />
-                                    Load Config
-                                </MButton>
-                            </MCol>
+
                             </MRow>
                     </MContainer>
                 </MCardText>
@@ -162,10 +166,6 @@
         </MTabItem>
     </MTabsItems>
 </MCard>
-
-<MContainer Fluid Class="fill-height">
-    
-</MContainer>
 
 @code {
     public StringNumber _tabs;
@@ -204,6 +204,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        CommandCommunicationService.OnAvailableSymbolNameChanged += OnAvailableSymbolNameChanged;
         DataLogService.OnParseFrameDataAction += UpdateGraphViewData;
         LoadAppConfig();
         PopupService.EnqueueSnackbarAsync("Initialized Finished!");
@@ -221,7 +222,7 @@
         {
             PopupService.EnqueueSnackbarAsync("Please check if serial port is opened");
         }
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     private void GetAvailableRecordDataNames()
@@ -234,8 +235,10 @@
         {
             PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
         }
+    }
 
-        StateHasChanged();
+    private void OnAvailableSymbolNameChanged() {
+        InvokeAsync(StateHasChanged);
     }
 
     private void StartRecordData()
@@ -272,7 +275,7 @@
         {
             PopupService.EnqueueSnackbarAsync("Record and Echo Names not same");   
         }
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     private void ClearRecordData()
@@ -302,7 +305,7 @@
         {
             await DataLogService.ExportLog(DataLogService.DataLogConfig.RecordFileFullName + "." + exportType, exportType);
         }
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     private void UpdateGraphViewData(int startId)
@@ -365,7 +368,7 @@
         RecordSymbolName = DataLogConfig.RecordSymbolName.Select(s=>s.ToStringNumber()).ToList();
         GraphSymbolName = DataLogConfig.GraphSymbolName.Select(s=>s.ToStringNumber()).ToList();
 
-        StateHasChanged();
+        InvokeAsync(StateHasChanged);
     }
 
     private void OnSaveConfig() {

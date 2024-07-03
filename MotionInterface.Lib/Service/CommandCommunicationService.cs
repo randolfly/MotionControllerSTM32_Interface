@@ -43,6 +43,11 @@ public class CommandCommunicationService
     /// </summary>
     public Action<ProtocolFrame>? OnParseFrameDataAction { get; set; }
 
+    /// <summary>
+    /// invokes when available symbol name changed
+    /// </summary>
+    public Action OnAvailableSymbolNameChanged { get; set; }
+
     #region SendFrameData
 
     public void SendFrameData(ProtocolFrame protocolFrame)
@@ -87,6 +92,7 @@ public class CommandCommunicationService
             case ProtocolCommand.DataLogSendAvailableDataCmd:
             {
                 AvailableSymbolName = ProtocolFrame.ParamData.ByteArrayToNameStringList();
+                OnAvailableSymbolNameChanged?.Invoke();
                 break;
             }
             case ProtocolCommand.DataLogEchoLogDataCmd:
