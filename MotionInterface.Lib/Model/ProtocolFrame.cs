@@ -113,10 +113,16 @@ public class ProtocolFrame
     }
 
     
+    /// <summary>
+    /// FRAME DATA => UI 
+    /// </summary>
+    /// <returns></returns>
     public string SerializeParamData()
     {
         return Command switch
         {
+            ProtocolCommand.GetSymbolDataCmd => ParamData.ByteArrayToNameString(),
+            ProtocolCommand.GetEchoSymbolDataCmd => ParamData.ByteArrayToFloatString(),
             ProtocolCommand.DataLogEchoGetAvailableDataCmd => ParamData.ByteArrayToNameString(),
             ProtocolCommand.DataLogEchoSetLogDataCmd => ParamData.ByteArrayToNameString(),
             ProtocolCommand.DataLogSetLogDataCmd => ParamData.ByteArrayToNameString(),
@@ -125,6 +131,7 @@ public class ProtocolFrame
     }
 
     /// <summary>
+    /// UI=>FRAME DATA
     /// convert param data string to byte array for ui send frame
     /// </summary>
     /// <param name="paramDataString">ui data string</param>
@@ -133,6 +140,7 @@ public class ProtocolFrame
         ParamData = Command switch
         {
             ProtocolCommand.DataLogSetLogDataCmd => paramDataString.NameStringToByteArray(),
+            ProtocolCommand.GetSymbolDataCmd => paramDataString.NameStringToByteArray(),
             _ => paramDataString.FloatStringToByteArray()
         };
     }
