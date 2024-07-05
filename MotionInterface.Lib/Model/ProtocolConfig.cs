@@ -46,7 +46,7 @@ public enum ProtocolCommand : ushort
     #region SET
 
     SetSymbolDataCmd = 0x2001, 
-
+    SetEchoSymbolDataCmd = 0x2101,
 
     #endregion
     

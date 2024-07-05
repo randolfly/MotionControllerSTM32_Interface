@@ -145,4 +145,25 @@ public static class ByteOperator
     {
         return Encoding.UTF8.GetString(byteArray);
     }
+    
+    /// <summary>
+    /// used to convert string_float param data to string, for SET cmd
+    /// </summary>
+    /// <param name="data">src param data array</param>
+    /// <returns>param name: param value</returns>
+    public static string ByteArrayToNameStringAndFloat(this byte[] data)
+    {
+        var stringValue = data.Take(data.Length - 4).ToArray().ByteArrayToNameString();
+        var floatValue = BitConverter.ToSingle(data, data.Length - 4);
+        return $"{stringValue}:{floatValue}";
+    }
+    
+    public static byte[] NameStringAndFloatToByteArray(this string nameString)
+    {
+        var result = nameString.Split(':');
+        var stringValue = result[0].NameStringToByteArray();
+        var floatValue = result[1].FloatStringToByteArray();
+        var targetByteArray = stringValue.Concat(floatValue).ToArray();
+        return targetByteArray;
+    }
 }

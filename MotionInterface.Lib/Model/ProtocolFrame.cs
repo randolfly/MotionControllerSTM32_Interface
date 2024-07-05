@@ -113,6 +113,8 @@ public class ProtocolFrame
     }
 
     
+    
+    
     /// <summary>
     /// FRAME DATA => UI 
     /// </summary>
@@ -123,6 +125,8 @@ public class ProtocolFrame
         {
             ProtocolCommand.GetSymbolDataCmd => ParamData.ByteArrayToNameString(),
             ProtocolCommand.GetEchoSymbolDataCmd => ParamData.ByteArrayToFloatString(),
+            ProtocolCommand.SetSymbolDataCmd => ParamData.ByteArrayToNameStringAndFloat(),
+            ProtocolCommand.SetEchoSymbolDataCmd => ParamData.ByteArrayToNameStringAndFloat(),
             ProtocolCommand.DataLogEchoGetAvailableDataCmd => ParamData.ByteArrayToNameString(),
             ProtocolCommand.DataLogEchoSetLogDataCmd => ParamData.ByteArrayToNameString(),
             ProtocolCommand.DataLogSetLogDataCmd => ParamData.ByteArrayToNameString(),
@@ -139,8 +143,9 @@ public class ProtocolFrame
     {
         ParamData = Command switch
         {
-            ProtocolCommand.DataLogSetLogDataCmd => paramDataString.NameStringToByteArray(),
             ProtocolCommand.GetSymbolDataCmd => paramDataString.NameStringToByteArray(),
+            ProtocolCommand.SetSymbolDataCmd => paramDataString.NameStringAndFloatToByteArray(),
+            ProtocolCommand.DataLogSetLogDataCmd => paramDataString.NameStringToByteArray(),
             _ => paramDataString.FloatStringToByteArray()
         };
     }
