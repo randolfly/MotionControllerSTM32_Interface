@@ -1,0 +1,48 @@
+﻿@page "/ControlUI"
+@using MotionInterface.Lib.Model
+@using MotionInterface.Lib.Service
+@inject CommandCommunicationService CommandCommunicationService
+@inject ControlStateService ControlStateService
+
+<MContainer>
+    <MRow>
+        <MSwitch @bind-Value="IsElectricallyPowerOn"
+                 Inset Label="@(IsElectricallyPowerOn ? "poweron" : "poweroff")">
+        </MSwitch>
+    </MRow>
+</MContainer>
+
+@code {
+    public ControlState ControlState { get; set; } = new();
+
+    public bool IsElectricallyPowerOn
+    {
+        get => ControlState.MotorState.IsElectricallyPowerOn;
+        set
+        {
+            ControlState.MotorState.IsElectricallyPowerOn = value;
+            SetMotorElectricPower(value);
+        }
+    }
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ControlState = ControlStateService.ControlState;
+    }
+
+    #region Control Command
+
+    private void SetMotorElectricPower(bool status)
+    {
+        CommandCommunicationService.SetSymbolValue("poweron_motor_elec", 
+            status ? 1.0f : 0.0f);
+    }
+    
+    
+    
+    
+    
+
+    #endregion
+}

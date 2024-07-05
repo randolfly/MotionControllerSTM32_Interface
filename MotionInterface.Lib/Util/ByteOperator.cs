@@ -155,9 +155,19 @@ public static class ByteOperator
     {
         var stringValue = data.Take(data.Length - 4).ToArray().ByteArrayToNameString();
         var floatValue = BitConverter.ToSingle(data, data.Length - 4);
-        return $"{stringValue}:{floatValue}";
+        return CombineNameStringAndFloat(stringValue, floatValue);
     }
     
+    public static string CombineNameStringAndFloat(string nameString, float floatValue)
+    {
+        return $"{nameString}:{floatValue}";
+    }
+    
+    /// <summary>
+    /// convert string_float param data to byte array, for SET cmd
+    /// </summary>
+    /// <param name="nameString"></param>
+    /// <returns></returns>
     public static byte[] NameStringAndFloatToByteArray(this string nameString)
     {
         var result = nameString.Split(':');

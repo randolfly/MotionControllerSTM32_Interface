@@ -108,6 +108,16 @@ public class CommandCommunicationService
 
     #region util functions
 
+    public void SetSymbolValue(string symbolName, float value)
+    {
+        SendFrameData(new ProtocolFrame
+        {
+            Command = ProtocolCommand.SetSymbolDataCmd,
+            ParamData = ByteOperator.CombineNameStringAndFloat(symbolName, value)
+                .NameStringAndFloatToByteArray()
+        });
+    }
+    
     public void GetAvailableRecordDataNames()
     {
         var checkAvailableDataFrame = new ProtocolFrame
