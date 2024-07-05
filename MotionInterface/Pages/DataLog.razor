@@ -186,28 +186,50 @@
 
     private void OnRecordSymbolChanged(List<StringNumber> symbolInfoPaths)
     {
-        CommandCommunicationService.RecordSymbolName = symbolInfoPaths
-            .Select(sn=>sn.ToString()).ToList()!;
+        CommandCommunicationService.RecordSymbolName.Clear();
+        foreach (var symbol in CommandCommunicationService.AvailableSymbolName)
+        {
+            if (symbolInfoPaths.Contains(symbol))
+            {
+                CommandCommunicationService.RecordSymbolName.Add(symbol);
+            }
+        }
+        // update GraphSymbols
+        var deletedGraphSymbolList = new List<string>();
+        foreach (var symbol in CommandCommunicationService.GraphSymbolName)
+        {
+            if (CommandCommunicationService.RecordSymbolName.Contains(symbol)) continue;
+            deletedGraphSymbolList.Add(symbol);
+        }
+
+        foreach (var deletedSymbol in deletedGraphSymbolList)
+        {
+            CommandCommunicationService.GraphSymbolName.Remove(deletedSymbol);
+        }
+        
         SaveAppConfig();
     }
 
-    private void PickDatalogFolder() {
-        var folder = FolderPicker.DisplayFolderPicker();
-        DataLogConfig.DataLogFolderName = folder;
-        InvokeAsync(StateHasChanged);
-    }
+
 
     private List<StringNumber> GraphSymbolName
     {
         get => CommandCommunicationService.GraphSymbolName.ToStringNumber();
         set => OnGraphSymbolChanged(value);
     }
+
+    private List<int> GraphSymbolDataIdList { get; set; } = new();
     
-    private List<int> GraphSymbolDataIdList { get; set; }
-    
-    private void OnGraphSymbolChanged(List<StringNumber> symbolInfoPaths) {
-        CommandCommunicationService.GraphSymbolName = symbolInfoPaths
-            .Select(sn => sn.ToString()).ToList()!;
+    private void OnGraphSymbolChanged(List<StringNumber> symbolInfoPaths)
+    {
+        CommandCommunicationService.GraphSymbolName.Clear();
+        foreach (var symbol in CommandCommunicationService.RecordSymbolName)
+        {
+            if (symbolInfoPaths.Contains(symbol))
+            {
+                CommandCommunicationService.GraphSymbolName.Add(symbol);
+            }
+        }
         // search graph data id
         GraphSymbolDataIdList = new List<int>(CommandCommunicationService.GraphSymbolName.Count);
         foreach (var graphSymbol in CommandCommunicationService.GraphSymbolName)
@@ -218,6 +240,12 @@
         SaveAppConfig();
     }
 
+    private void PickDatalogFolder() {
+        var folder = FolderPicker.DisplayFolderPicker();
+        DataLogConfig.DataLogFolderName = folder;
+        InvokeAsync(StateHasChanged);
+    }
+    
     protected override void OnInitialized()
     {
         base.OnInitialized();

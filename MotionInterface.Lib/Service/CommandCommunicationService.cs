@@ -88,13 +88,13 @@ public class CommandCommunicationService
         ReceivedProtocolFrameList.Add(ProtocolFrame.DeepClone());
         switch (ProtocolFrame.Command)
         {
-            case ProtocolCommand.DataLogSendAvailableDataCmd:
+            case ProtocolCommand.DataLogEchoGetAvailableDataCmd:
             {
                 AvailableSymbolName = ProtocolFrame.ParamData.ByteArrayToNameStringList();
                 OnAvailableSymbolNameChanged?.Invoke();
                 break;
             }
-            case ProtocolCommand.DataLogEchoLogDataCmd:
+            case ProtocolCommand.DataLogEchoSetLogDataCmd:
             {
                 EchoRecordSymbolName = ProtocolFrame.ParamData.ByteArrayToNameStringList();
                 break;
@@ -112,7 +112,7 @@ public class CommandCommunicationService
     {
         var checkAvailableDataFrame = new ProtocolFrame
         {
-            Command = ProtocolCommand.DataLogCheckAvailableDataCmd,
+            Command = ProtocolCommand.DataLogGetAvailableDataCmd,
         };
         SendFrameData(checkAvailableDataFrame);
     }

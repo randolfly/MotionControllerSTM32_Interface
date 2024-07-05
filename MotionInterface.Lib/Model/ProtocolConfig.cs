@@ -29,29 +29,46 @@ public enum MotorId : byte
 
 public enum ProtocolCommand : ushort
 {
-    NullCmd = 0xFFFF,
     
-    // client to server commands
-    SendVelPidCmd = 0x0001,
-    SendPosPidCmd = 0x0002,
-    SendStateIdCmd = 0x0003,
-    
-    DataLogSendAvailableDataCmd = 0x2001,
-    DataLogEchoLogDataCmd = 0x2002,
-    DataLogEchoLogStartCmd = 0x2003,
-    //! only this cmd is sent in high-speed uart port
-    DataLogRunningCmd = 0x2004,
+    #region CONTROL
 
-    // server to client commands
-    SetVelPidCmd = 0x1001,
-    SetPosPidCmd = 0x1002,
-    StartSystemCmd = 0x1003,
-    StopSystemCmd = 0x1004,
-    EmergencySystemStopCmd = 0x1005,
-    ResetSystemCmd = 0x1006,
     
-    DataLogCheckAvailableDataCmd = 0x3001,
+
+    #endregion
+
+    #region GET
+
+    GetSymbolDataCmd = 0x1001, 
+    GetEchoSymbolDataCmd = 0x1101,
+
+    #endregion
+
+    #region SET
+
+    SetSymbolDataCmd = 0x2001, 
+
+
+    #endregion
+    
+
+    #region DATALOG
+    
+    DataLogGetAvailableDataCmd = 0x3001,
+    DataLogEchoGetAvailableDataCmd = 0x3101,
+    
     DataLogSetLogDataCmd = 0x3002,
+    DataLogEchoSetLogDataCmd = 0x3102,
+    
     DataLogStartLogCmd = 0x3003,
     DataLogStopLogCmd = 0x3004,
+    
+    //! only this cmd is sent in high-speed uart port
+    DataLogRunningCmd = 0x3103,
+    #endregion
+
+    #region OTHER
+
+    NullCmd = 0xFFFF,
+
+    #endregion
 }

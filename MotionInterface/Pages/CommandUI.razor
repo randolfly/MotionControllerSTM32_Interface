@@ -110,14 +110,7 @@
         if (ParamDataString.Length > 0)
         {
             // command head validation
-            if (ProtocolFrame.Command == ProtocolCommand.SendStateIdCmd)
-            {
-                ProtocolFrame.ParamData = ParamDataString.NameStringToByteArray();
-            }
-            else
-            {
-                ProtocolFrame.ParamData = ParamDataString.FloatStringToByteArray();
-            }
+            ProtocolFrame.DeserializeParamData(ParamDataString);
         }
         CommandCommunicationService.SendFrameData(ProtocolFrame);
         // InvokeAsync(() => _sendFramesList.ScrollToBottom());

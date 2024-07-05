@@ -68,12 +68,12 @@ public class ProtocolTest
         _testOutputHelper.WriteLine("start SendMultipleCommandsTest\n");
         var protocolFrame1 = InitProtocolFrame();
         WriteFrameBuffer(protocolFrame1);
-        var protocolFrame2 = InitProtocolFrame(ProtocolCommand.ResetSystemCmd);
+        var protocolFrame2 = InitProtocolFrame(ProtocolCommand.DataLogRunningCmd);
         WriteFrameBuffer(protocolFrame2);
-        var protocolFrame3 = InitProtocolFrame(ProtocolCommand.SetPosPidCmd);
+        var protocolFrame3 = InitProtocolFrame(ProtocolCommand.DataLogSetLogDataCmd);
         protocolFrame3.Header = ProtocolFrameHeader.TestInvalidHeader;
         WriteFrameBuffer(protocolFrame3);
-        var protocolFrame4 = InitProtocolFrame(ProtocolCommand.SendStateIdCmd);
+        var protocolFrame4 = InitProtocolFrame(ProtocolCommand.DataLogStartLogCmd);
         WriteFrameBuffer(protocolFrame4);
         
         CheckParseResult(protocolFrame1);
@@ -137,7 +137,7 @@ public class ProtocolTest
         Assert.True(protocolFrame.Checksum == testFrame.Checksum);
     }
     
-    private ProtocolFrame InitProtocolFrame(ProtocolCommand command = ProtocolCommand.SendVelPidCmd)
+    private ProtocolFrame InitProtocolFrame(ProtocolCommand command = ProtocolCommand.DataLogSetLogDataCmd)
     {
         var protocolFrame = new ProtocolFrame
         {

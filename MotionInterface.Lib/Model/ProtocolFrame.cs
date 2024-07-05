@@ -112,14 +112,28 @@ public class ProtocolFrame
         DateTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ms");
     }
 
+    
     public string SerializeParamData()
     {
         return Command switch
         {
-            ProtocolCommand.DataLogSendAvailableDataCmd => ParamData.ByteArrayToNameString(),
-            ProtocolCommand.DataLogEchoLogDataCmd => ParamData.ByteArrayToNameString(),
+            ProtocolCommand.DataLogEchoGetAvailableDataCmd => ParamData.ByteArrayToNameString(),
+            ProtocolCommand.DataLogEchoSetLogDataCmd => ParamData.ByteArrayToNameString(),
             ProtocolCommand.DataLogSetLogDataCmd => ParamData.ByteArrayToNameString(),
             _ => ParamData.ByteArrayToFloatString()
+        };
+    }
+
+    /// <summary>
+    /// convert param data string to byte array for ui send frame
+    /// </summary>
+    /// <param name="paramDataString">ui data string</param>
+    public void DeserializeParamData(string paramDataString)
+    {
+        ParamData = Command switch
+        {
+            ProtocolCommand.DataLogSetLogDataCmd => paramDataString.NameStringToByteArray(),
+            _ => paramDataString.FloatStringToByteArray()
         };
     }
 }
