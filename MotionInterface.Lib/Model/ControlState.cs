@@ -2,9 +2,17 @@
 
 public class ControlState
 {
-    public  MotorState MotorState { get; set; } = new ();}
+    public  MotionState MotionState { get; set; } = new ();
+    
+}
 
-public class MotorState
+public enum MotionState
 {
-    public bool IsElectricallyPowerOn { get; set; } = false;
+    Init,
+    PowerOn,
+    Idle,
+    PosMode,
+    VelMode,
+    TorqueMode,
+    Exit
 }

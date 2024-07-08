@@ -28,6 +28,8 @@ public class CommandCommunicationService
     public List<string> EchoRecordSymbolName { get; set; } = new();
     public List<string> GraphSymbolName { get; set; } = new();
     
+    public MotionState MotionState { get; set; } = MotionState.Init;   
+    
     public CommandCommunicationService()
     {
         SerialPort.BaudRate = 115200;
@@ -88,6 +90,12 @@ public class CommandCommunicationService
         ReceivedProtocolFrameList.Add(ProtocolFrame.DeepClone());
         switch (ProtocolFrame.Command)
         {
+            case ProtocolCommand.GetEchoSymbolDataCmd:
+            {
+                // only used for get motion state
+                MotionState = (MotionState)ProtocolFrame.ParamData.ByteArrayToFloatArray().First();
+                break;
+            }
             case ProtocolCommand.DataLogEchoGetAvailableDataCmd:
             {
                 AvailableSymbolName = ProtocolFrame.ParamData.ByteArrayToNameStringList();
@@ -107,6 +115,15 @@ public class CommandCommunicationService
     #endregion
 
     #region util functions
+    
+    public void GetMotionState()
+    {
+        SendFrameData(new ProtocolFrame
+        {
+            Command = ProtocolCommand.GetSymbolDataCmd,
+            ParamData = "msm_state".NameStringToByteArray()
+        });
+    }
 
     public void SetSymbolValue(string symbolName, float value)
     {

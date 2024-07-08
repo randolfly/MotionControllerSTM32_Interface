@@ -1,0 +1,99 @@
+﻿@using MotionInterface.Lib.Model
+@using MotionInterface.Lib.Service
+@using System.Timers
+@implements IDisposable
+@inject ControlStateService ControlStateService
+
+<div class="d-flex align-center justify-center" style="height: 100%">
+    <MECharts Option="EChartOption" Width="@("100%")">
+    </MECharts>
+</div>
+
+@code {
+    
+    private Timer? _timer;
+
+    private object EChartOption;
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        
+
+        EChartOption = GenOption(ControlStateService.ControlState.MotionState);
+        
+        if (_timer != null) return;
+        _timer = new Timer
+        {
+            Interval = 200
+        };
+
+        _timer.Elapsed += TimerOnElapsed;
+
+        _timer.Start();
+    }
+    
+
+    
+    private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
+    {
+        InvokeAsync(() =>
+        {
+            // new instance will trigger the echarts.setOption()
+            EChartOption = GenOption(ControlStateService.ControlState.MotionState);
+            StateHasChanged();
+        });
+    }
+    
+    private string GetNodeColor(string state, MotionState motionState)
+    {
+        // highlight the current state
+        return motionState.ToString().Equals(state) ? "#f50" : "#2db7f5";
+    }
+
+    private object GenOption(MotionState motionState)
+    {
+        return new
+        {
+            Series = new[]
+            {
+                new
+                {
+                    Type = "graph",
+                    SymbolSize = 50,
+                    Label = new { Show = true },
+                    EdgeSymbol = new[] { "circle", "arrow" },
+                    EdgeSymbolSize = new[] { 4, 10 },
+                    Data = new[]
+                    {
+                        new { Name = "Init", X = 500, Y = 100, ItemStyle = new { Color = GetNodeColor("Init", ControlStateService.ControlState.MotionState) } },
+                        new { Name = "PowerOn", X = 500, Y = 200, ItemStyle = new { Color = GetNodeColor("PowerOn",ControlStateService.ControlState.MotionState) } },
+                        new { Name = "Idle", X = 500, Y = 300, ItemStyle = new { Color = GetNodeColor("Idle",ControlStateService.ControlState.MotionState) } },
+                        new { Name = "PosMode", X = 350, Y = 400, ItemStyle = new { Color = GetNodeColor("PosMode",ControlStateService.ControlState.MotionState) } },
+                        new { Name = "VelMode", X = 500, Y = 400, ItemStyle = new { Color = GetNodeColor("VelMode",ControlStateService.ControlState.MotionState) } },
+                        new { Name = "TorqueMode", X = 650, Y = 400, ItemStyle = new { Color = GetNodeColor("TorqueMode",ControlStateService.ControlState.MotionState) } },
+                        new { Name = "Exit", X = 350, Y = 300, ItemStyle = new { Color = GetNodeColor("Exit",ControlStateService.ControlState.MotionState) } }
+                    },
+                    Links = new[]
+                    {
+                        new { Source = "Init", Target = "PowerOn" },
+                        new { Source = "PowerOn", Target = "Idle" },
+                        new { Source = "Idle", Target = "PosMode" },
+                        new { Source = "Idle", Target = "VelMode" },
+                        new { Source = "Idle", Target = "TorqueMode" },
+                        new { Source = "Idle", Target = "Exit" },
+                        new { Source = "PosMode", Target = "Idle" },
+                        new { Source = "VelMode", Target = "Idle" },
+                        new { Source = "TorqueMode", Target = "Idle" }
+                    },
+                    LineStyle = new { Width = 2 }
+                }
+            }
+        };
+    }
+    
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}

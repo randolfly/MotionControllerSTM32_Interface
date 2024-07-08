@@ -1,48 +1,159 @@
 ﻿@page "/ControlUI"
 @using MotionInterface.Lib.Model
 @using MotionInterface.Lib.Service
+@using MotionInterface.Lib.Util
 @inject CommandCommunicationService CommandCommunicationService
 @inject ControlStateService ControlStateService
 
 <MContainer>
     <MRow>
-        <MSwitch @bind-Value="IsElectricallyPowerOn"
-                 Inset Label="@(IsElectricallyPowerOn ? "poweron" : "poweroff")">
-        </MSwitch>
+        <MCol>
+            <h1>Control UI</h1>
+        </MCol>
+        <MCol>
+            <MButton Flat Dark Class="blue lighten-1" OnClick="CommandCommunicationService.OpenPort">
+                Open Port
+            </MButton>
+            <MButton Flat Dark Class="green lighten-1" OnClick="CommandCommunicationService.ClosePort">
+                Close Port
+            </MButton>
+            <MButton Flat Dark Class="red lighten-1" OnClick="StartUpdateStateMachine">
+                Start Update
+            </MButton>
+            <MButton Flat Dark Class="indigo lighten-1" OnClick="_periodicActionTimer.StopTimer">
+                Stop Update
+            </MButton>
+        </MCol>
+    </MRow>
+    <MRow>
+        <MCol Cols="6">
+            <MRow Style="margin-bottom: 10px">
+                <MCol>
+                    <MButton Flat Dark Class="blue-grey lighten-1" OnClick="MsmInitToPowerOn">
+                        Init -> PowerOn
+                    </MButton>
+                </MCol>
+            </MRow>
+            <MRow Style="margin-bottom: 10px">
+                <MCol>
+                    <MButton Flat Dark Class="blue lighten-1" OnClick="MsmIdleToPosMode">
+                        Idle -> PosMode
+                    </MButton>
+                </MCol>
+                <MCol>
+                    <MButton Flat Dark Class="blue darken-3" OnClick="MsmPosModeToIdle">
+                        PosMode -> Idle
+                    </MButton>
+                </MCol>
+            </MRow>
+            <MRow Style="margin-bottom: 10px">
+                <MCol>
+                    <MButton Flat Dark Class="green lighten-1" OnClick="MsmIdleToVelMode">
+                        Idle -> VelMode
+                    </MButton>
+                </MCol>
+                <MCol>
+                    <MButton Flat Dark Class="green darken-3" OnClick="MsmVelModeToIdle">
+                        VelMode -> Idle
+                    </MButton>
+                </MCol>
+            </MRow>
+            <MRow Style="margin-bottom: 10px">
+                <MCol>
+                    <MButton Flat Dark Class="indigo lighten-1" OnClick="MsmIdleToTorqueMode">
+                        Idle -> TorqueMode
+                    </MButton>
+                </MCol>
+                <MCol>
+                    <MButton Flat Dark Class="indigo darken-3" OnClick="MsmTorqueModeToIdle">
+                        TorqueMode -> Idle
+                    </MButton>
+                </MCol>
+            </MRow>
+
+            <MRow Style="margin-bottom: 10px">
+                <MCol>
+                    <MButton Flat Dark Class="red lighten-1" OnClick="MsmIdleToExit">
+                        Idle -> Exit
+                    </MButton>
+                </MCol>
+            </MRow>
+
+        </MCol>
+        <MCol Cols="6">
+            <MotionStateMachine></MotionStateMachine>
+        </MCol>
     </MRow>
 </MContainer>
 
 @code {
+    private PeriodicActionTimer _periodicActionTimer;
     public ControlState ControlState { get; set; } = new();
-
-    public bool IsElectricallyPowerOn
-    {
-        get => ControlState.MotorState.IsElectricallyPowerOn;
-        set
-        {
-            ControlState.MotorState.IsElectricallyPowerOn = value;
-            SetMotorElectricPower(value);
-        }
-    }
     
     protected override void OnInitialized()
     {
         base.OnInitialized();
         ControlState = ControlStateService.ControlState;
+        _periodicActionTimer = new PeriodicActionTimer(UpdateStateMachineState, 200);
     }
 
+    private void UpdateStateMachineState()
+    {
+        CommandCommunicationService.GetMotionState();
+        ControlStateService.ControlState.MotionState = CommandCommunicationService.MotionState;
+        ControlState = ControlStateService.ControlState;
+    }
+
+    private void StartUpdateStateMachine()
+    {
+        if (!CommandCommunicationService.IsPortOpen)
+        {
+            CommandCommunicationService.OpenPort();
+        }
+        _periodicActionTimer.StartTimer();
+    }
+
+    
     #region Control Command
 
-    private void SetMotorElectricPower(bool status)
+    private void MsmInitToPowerOn()
     {
-        CommandCommunicationService.SetSymbolValue("poweron_motor_elec", 
-            status ? 1.0f : 0.0f);
+        CommandCommunicationService.SetSymbolValue("msm_init_to_poweron", 1.0f);
     }
     
+    private void MsmIdleToExit()
+    {
+        CommandCommunicationService.SetSymbolValue("msm_idle_to_exit", 1.0f);
+    }
     
+    private void MsmIdleToPosMode()
+    {
+        CommandCommunicationService.SetSymbolValue("msm_idle_to_pos", 1.0f);
+    }
     
+    private void MsmPosModeToIdle()
+    {
+        CommandCommunicationService.SetSymbolValue("msm_pos_to_idle", 1.0f);
+    }
     
+    private void MsmIdleToVelMode()
+    {
+        CommandCommunicationService.SetSymbolValue("msm_idle_to_vel", 1.0f);
+    }
     
-
+    private void MsmVelModeToIdle()
+    {
+        CommandCommunicationService.SetSymbolValue("msm_vel_to_idle", 1.0f);
+    }
+    
+    private void MsmIdleToTorqueMode()
+    {
+        CommandCommunicationService.SetSymbolValue("msm_idle_to_torque", 1.0f);
+    }
+    
+    private void MsmTorqueModeToIdle()
+    {
+        CommandCommunicationService.SetSymbolValue("msm_torque_to_idle", 1.0f);
+    }
     #endregion
 }

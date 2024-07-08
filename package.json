@@ -1,0 +1,17 @@
+{
+  "name": "motioncontrollerstm32_interface",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/randolfly/MotionControllerSTM32_Interface.git"
+  },
+  "private": true,
+  "dependencies": {
+    "echarts": "^5.5.1"
+  }
+}
