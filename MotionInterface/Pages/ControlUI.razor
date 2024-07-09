@@ -27,57 +27,78 @@
     </MRow>
     <MRow>
         <MCol Cols="6">
-            <MRow Style="margin-bottom: 10px">
-                <MCol>
-                    <MButton Flat Dark Class="blue-grey lighten-1" OnClick="MsmInitToPowerOn">
-                        Init -> PowerOn
-                    </MButton>
-                </MCol>
-            </MRow>
-            <MRow Style="margin-bottom: 10px">
-                <MCol>
-                    <MButton Flat Dark Class="blue lighten-1" OnClick="MsmIdleToPosMode">
-                        Idle -> PosMode
-                    </MButton>
-                </MCol>
-                <MCol>
-                    <MButton Flat Dark Class="blue darken-3" OnClick="MsmPosModeToIdle">
-                        PosMode -> Idle
-                    </MButton>
-                </MCol>
-            </MRow>
-            <MRow Style="margin-bottom: 10px">
-                <MCol>
-                    <MButton Flat Dark Class="green lighten-1" OnClick="MsmIdleToVelMode">
-                        Idle -> VelMode
-                    </MButton>
-                </MCol>
-                <MCol>
-                    <MButton Flat Dark Class="green darken-3" OnClick="MsmVelModeToIdle">
-                        VelMode -> Idle
-                    </MButton>
-                </MCol>
-            </MRow>
-            <MRow Style="margin-bottom: 10px">
-                <MCol>
-                    <MButton Flat Dark Class="indigo lighten-1" OnClick="MsmIdleToTorqueMode">
-                        Idle -> TorqueMode
-                    </MButton>
-                </MCol>
-                <MCol>
-                    <MButton Flat Dark Class="indigo darken-3" OnClick="MsmTorqueModeToIdle">
-                        TorqueMode -> Idle
-                    </MButton>
-                </MCol>
-            </MRow>
-
-            <MRow Style="margin-bottom: 10px">
-                <MCol>
-                    <MButton Flat Dark Class="red lighten-1" OnClick="MsmIdleToExit">
-                        Idle -> Exit
-                    </MButton>
-                </MCol>
-            </MRow>
+            <MTabs @bind-Value="_tabs" Centered Grow>
+                <MTab>
+                    <MCol>
+                        <MIcon Icon="@("mdi-connection")"/>
+                        State
+                    </MCol>
+                </MTab>
+                <MTab>
+                    <MCol>
+                        <MIcon Icon="@("mdi-content-save")"/>
+                        Motion
+                    </MCol>
+                </MTab>
+            </MTabs>
+            <MTabsItems Value="_tabs">
+                <MTabItem>
+                    <MRow Style="margin-bottom: 10px">
+                        <MCol>
+                            <MButton Flat Dark Class="blue-grey lighten-1" OnClick="MsmInitToPowerOn">
+                                Init -> PowerOn
+                            </MButton>
+                        </MCol>
+                    </MRow>
+                    <MRow Style="margin-bottom: 10px">
+                        <MCol>
+                            <MButton Flat Dark Class="blue lighten-1" OnClick="MsmIdleToPosMode">
+                                Idle -> PosMode
+                            </MButton>
+                        </MCol>
+                        <MCol>
+                            <MButton Flat Dark Class="blue darken-3" OnClick="MsmPosModeToIdle">
+                                PosMode -> Idle
+                            </MButton>
+                        </MCol>
+                    </MRow>
+                    <MRow Style="margin-bottom: 10px">
+                        <MCol>
+                            <MButton Flat Dark Class="green lighten-1" OnClick="MsmIdleToVelMode">
+                                Idle -> VelMode
+                            </MButton>
+                        </MCol>
+                        <MCol>
+                            <MButton Flat Dark Class="green darken-3" OnClick="MsmVelModeToIdle">
+                                VelMode -> Idle
+                            </MButton>
+                        </MCol>
+                    </MRow>
+                    <MRow Style="margin-bottom: 10px">
+                        <MCol>
+                            <MButton Flat Dark Class="indigo lighten-1" OnClick="MsmIdleToTorqueMode">
+                                Idle -> TorqueMode
+                            </MButton>
+                        </MCol>
+                        <MCol>
+                            <MButton Flat Dark Class="indigo darken-3" OnClick="MsmTorqueModeToIdle">
+                                TorqueMode -> Idle
+                            </MButton>
+                        </MCol>
+                    </MRow>
+                    <MRow Style="margin-bottom: 10px">
+                        <MCol>
+                            <MButton Flat Dark Class="red lighten-1" OnClick="MsmIdleToExit">
+                                Idle -> Exit
+                            </MButton>
+                        </MCol>
+                    </MRow>
+                </MTabItem>
+                <MTabItem>
+                    <TorqueCommand/>
+                </MTabItem>
+            </MTabsItems>
+            
 
         </MCol>
         <MCol Cols="6">
@@ -87,6 +108,7 @@
 </MContainer>
 
 @code {
+    public StringNumber _tabs;
     private PeriodicActionTimer _periodicActionTimer;
     public ControlState ControlState { get; set; } = new();
     

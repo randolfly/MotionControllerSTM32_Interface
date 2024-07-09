@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MotionInterface.Lib.Service;
+using MotionInterface.Service;
 
 namespace MotionInterface;
 
@@ -30,6 +31,7 @@ public partial class MainWindow : Window
         serviceCollection.AddSingleton<DataLogService>();
         serviceCollection.AddSingleton<AppConfigService>();
         serviceCollection.AddSingleton<ControlStateService>();
+        serviceCollection.AddSingleton<FigureWindowService>();
 
 #if DEBUG
         serviceCollection.AddBlazorWebViewDeveloperTools();

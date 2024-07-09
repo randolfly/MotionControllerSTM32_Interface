@@ -3,10 +3,13 @@
 @using MotionInterface.Lib.Model
 @using MotionInterface.Lib.Service
 @using MotionInterface.Lib.Util
+@using MotionInterface.Service
 @using MotionInterface.Util
+
 
 @inject IPopupService PopupService
 @inject CommandCommunicationService CommandCommunicationService
+@inject FigureWindowService FigureWindowService
 @inject DataLogService DataLogService
 @inject AppConfigService AppConfigService
 
@@ -171,10 +174,11 @@
 
 @code {
     public StringNumber _tabs;
+    
     private AppConfig AppConfig { get; set; }
     private DataLogConfig DataLogConfig { get; set; }
 
-    private Dictionary<string, FigureViewWindow> FigureViewWindowDictionary { get; set; } = new();
+    public Dictionary<string, FigureViewWindow> FigureViewWindowDictionary { get; set; }
 
     private List<string> AvailableSymbolName => CommandCommunicationService.AvailableSymbolName;
 
@@ -209,9 +213,7 @@
         
         SaveAppConfig();
     }
-
-
-
+    
     private List<StringNumber> GraphSymbolName
     {
         get => CommandCommunicationService.GraphSymbolName.ToStringNumber();
@@ -245,14 +247,14 @@
         DataLogConfig.DataLogFolderName = folder;
         InvokeAsync(StateHasChanged);
     }
+   
     
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        CommandCommunicationService.OnAvailableSymbolNameChanged += OnAvailableSymbolNameChanged;
-        DataLogService.OnParseFrameDataAction += UpdateGraphViewData;
         LoadAppConfig();
-        PopupService.EnqueueSnackbarAsync("Initialized Finished!");
+        FigureViewWindowDictionary = FigureWindowService.FigureViewWindowDictionary;
+        PopupService.EnqueueSnackbarAsync("Initialized Finished!", timeout: 1000);
     }
     
     private void SetRecordDataNames()
@@ -263,7 +265,7 @@
         }
         else
         {
-            PopupService.EnqueueSnackbarAsync("Please check if serial port is opened");
+            PopupService.EnqueueSnackbarAsync("Please check if serial port is opened", timeout: 2000);
         }
         InvokeAsync(StateHasChanged);
     }
@@ -273,10 +275,12 @@
         if (CommandCommunicationService.IsPortOpen)
         {
             CommandCommunicationService.GetAvailableRecordDataNames();
+            CommandCommunicationService.OnAvailableSymbolNameChanged += OnAvailableSymbolNameChanged;
+            DataLogService.OnParseFrameDataAction += UpdateGraphViewData;
         }
         else
         {
-            PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
+            PopupService.EnqueueSnackbarAsync("Please check if serial port is opened", timeout: 2000); 
         }
     }
 
@@ -288,7 +292,7 @@
     {
         if (!CommandCommunicationService.IsPortOpen)
         {
-            PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
+            PopupService.EnqueueSnackbarAsync("Please check if serial port is opened", timeout: 2000); 
             return;
         }
         // check echo record names right
@@ -314,7 +318,7 @@
         }
         else
         {
-            PopupService.EnqueueSnackbarAsync("Record and Echo Names not same");   
+            PopupService.EnqueueSnackbarAsync("Record and Echo Names not same", timeout: 2000);   
         }
         InvokeAsync(StateHasChanged);
     }
@@ -330,7 +334,7 @@
     {
         if (!CommandCommunicationService.IsPortOpen)
         {
-            await PopupService.EnqueueSnackbarAsync("Please check if serial port is opened"); 
+            await PopupService.EnqueueSnackbarAsync("Please check if serial port is opened", timeout: 2000); 
             return;
         }
         CommandCommunicationService.StopRecordData();
@@ -425,7 +429,7 @@
     private void LoadAppConfig() {
         AppConfig = AppConfigService.AppConfig;
         DataLogConfig = AppConfigService.AppConfig.DataLogConfig;
-        PopupService.EnqueueSnackbarAsync("Load AppConfig");
+        PopupService.EnqueueSnackbarAsync("Load AppConfig", timeout: 1000);
     }
 
 }

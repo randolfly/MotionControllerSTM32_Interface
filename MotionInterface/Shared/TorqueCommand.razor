@@ -1,0 +1,28 @@
+﻿@using MotionInterface.Lib.Service
+@inject CommandCommunicationService CommandCommunicationService
+
+<MCard>
+    <MRow>
+        <MCol Cols="8">
+            <MTextField Type="number" TValue="float" Label="Torque Command"
+                        @bind-Value="TargetTorque"
+                        NumberProps="@(prop => { prop.Min = -1000; prop.Max = 1000; prop.Step = 1; })">
+            </MTextField>
+        </MCol>
+        <MCol Cols="4">
+            <MButton OnClick="()=>SetTorque(TargetTorque)">
+                Set Torque
+            </MButton>
+        </MCol>
+    </MRow>
+</MCard>
+
+@code {
+
+    public float TargetTorque { get; set; } = 0;
+
+    private void SetTorque(float targetTorque)
+    {
+        CommandCommunicationService.SetSymbolValue("target_torque", targetTorque);
+    }
+}
