@@ -3,7 +3,7 @@
 
 <MCard>
     <MRow>
-        <MCol Cols="8">
+        <MCol Cols="4">
             <MTextField Type="number" TValue="float" Label="Torque Command"
                         @bind-Value="TargetTorque"
                         NumberProps="@(prop => { prop.Min = -1000; prop.Max = 1000; prop.Step = 1; })">
@@ -12,6 +12,11 @@
         <MCol Cols="4">
             <MButton OnClick="()=>SetTorque(TargetTorque)">
                 Set Torque
+            </MButton>
+        </MCol>
+        <MCol Cols="4">
+            <MButton OnClick="()=>SetTorque(0)">
+                Stop Motor
             </MButton>
         </MCol>
     </MRow>
