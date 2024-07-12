@@ -14,5 +14,6 @@ public enum MotionState
     PosMode,
     VelMode,
     TorqueMode,
-    Exit
+    Exit,
+    TestTorqueBs,
 }

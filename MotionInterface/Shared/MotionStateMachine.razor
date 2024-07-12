@@ -72,6 +72,7 @@
                         new { Name = "PosMode", X = 350, Y = 400, ItemStyle = new { Color = GetNodeColor("PosMode",ControlStateService.ControlState.MotionState) } },
                         new { Name = "VelMode", X = 500, Y = 400, ItemStyle = new { Color = GetNodeColor("VelMode",ControlStateService.ControlState.MotionState) } },
                         new { Name = "TorqueMode", X = 650, Y = 400, ItemStyle = new { Color = GetNodeColor("TorqueMode",ControlStateService.ControlState.MotionState) } },
+                        new { Name = "TestTorqueBs", X = 650, Y = 300, ItemStyle = new { Color = GetNodeColor("TestTorqueBs",ControlStateService.ControlState.MotionState) } },
                         new { Name = "Exit", X = 350, Y = 300, ItemStyle = new { Color = GetNodeColor("Exit",ControlStateService.ControlState.MotionState) } }
                     },
                     Links = new[]
@@ -81,10 +82,12 @@
                         new { Source = "Idle", Target = "PosMode" },
                         new { Source = "Idle", Target = "VelMode" },
                         new { Source = "Idle", Target = "TorqueMode" },
+                        new { Source = "Idle", Target = "TestTorqueBs" },
                         new { Source = "Idle", Target = "Exit" },
                         new { Source = "PosMode", Target = "Idle" },
                         new { Source = "VelMode", Target = "Idle" },
-                        new { Source = "TorqueMode", Target = "Idle" }
+                        new { Source = "TorqueMode", Target = "Idle" },
+                        new { Source = "TestTorqueBs", Target = "Idle" },
                     },
                     LineStyle = new { Width = 2 }
                 }

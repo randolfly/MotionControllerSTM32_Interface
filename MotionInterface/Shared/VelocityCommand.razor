@@ -1,0 +1,33 @@
+﻿@using MotionInterface.Lib.Service
+@inject CommandCommunicationService CommandCommunicationService
+
+<MCard>
+    <MRow>
+        <MCol Cols="4">
+            <MTextField Type="number" TValue="float" Label="Velocity Command"
+                        @bind-Value="TargetVelocity"
+                        NumberProps="@(prop => { prop.Min = -3; prop.Max = 3; prop.Step = 0.1m; })">
+            </MTextField>
+        </MCol>
+        <MCol Cols="4">
+            <MButton OnClick="()=>SetVelocity(TargetVelocity)">
+                Set Velocity
+            </MButton>
+        </MCol>
+        <MCol Cols="4">
+            <MButton OnClick="()=>SetVelocity(0)">
+                Stop Motor
+            </MButton>
+        </MCol>
+    </MRow>
+</MCard>
+
+@code {
+
+    public float TargetVelocity { get; set; } = 0;
+
+    private void SetVelocity(float targetVelocity)
+    {
+        CommandCommunicationService.SetSymbolValue("target_vel", targetVelocity);
+    }
+}

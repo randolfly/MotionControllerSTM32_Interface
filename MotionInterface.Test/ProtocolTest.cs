@@ -63,6 +63,38 @@ public class ProtocolTest
     }
     
     [Fact]
+    public void ParseLongFrameTest()
+    {
+        _testOutputHelper.WriteLine("start ParseLongFrameTest\n");
+        var protocolFrame = InitProtocolFrame();
+        var rawByteList = new byte[400];
+        for (var i = 0; i < rawByteList.Length; i++)
+        {
+            rawByteList[i] = (byte)(i % 256);
+        }
+
+        ProtocolFrame.ParamData = rawByteList;
+        ProtocolFrame.Length = (ushort)(ProtocolConfig.ProtocolFrameHeaderSize +
+                                        ProtocolConfig.ProtocolFrameChecksumSize + 
+                                        ProtocolFrame.ParamData.Length);
+        WriteFrameBuffer(protocolFrame);
+        Assert.True(ProtocolFrame.Length == 410);
+    }
+
+    [Fact]
+    public void CalculateChecksumTest()
+    {
+        byte checksum = 0x00;
+        var rawByteList = new byte[400];
+        for (var i = 0; i < rawByteList.Length; i++)
+        {
+            rawByteList[i] = 0x3f;
+        }
+        checksum = ByteOperator.CalculateChecksum(rawByteList, 0, 400);
+        Assert.True(checksum == 0x70);
+    }
+    
+    [Fact]
     public void SendMultipleCommandsTest()
     {
         _testOutputHelper.WriteLine("start SendMultipleCommandsTest\n");

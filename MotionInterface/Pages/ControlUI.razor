@@ -40,6 +40,12 @@
                         Motion
                     </MCol>
                 </MTab>
+                <MTab>
+                    <MCol>
+                        <MIcon Icon="@("mdi-content-save")"/>
+                        TorqueTest
+                    </MCol>
+                </MTab>
             </MTabs>
             <MTabsItems Value="_tabs">
                 <MTabItem>
@@ -88,6 +94,18 @@
                     </MRow>
                     <MRow Style="margin-bottom: 10px">
                         <MCol>
+                            <MButton Flat Dark Class="indigo lighten-1" OnClick="MsmIdleToTestTorqueBs">
+                                Idle -> TestTorqueBs
+                            </MButton>
+                        </MCol>
+                        <MCol>
+                            <MButton Flat Dark Class="indigo darken-3" OnClick="MsmTestTorqueBsToIdle">
+                                TestTorqueBs -> Idle
+                            </MButton>
+                        </MCol>
+                    </MRow>
+                    <MRow Style="margin-bottom: 10px">
+                        <MCol>
                             <MButton Flat Dark Class="red lighten-1" OnClick="MsmIdleToExit">
                                 Idle -> Exit
                             </MButton>
@@ -95,7 +113,14 @@
                     </MRow>
                 </MTabItem>
                 <MTabItem>
-                    <TorqueCommand/>
+                    <MRow>
+                        <MCol Cols="12"><TorqueCommand/></MCol>
+                        <MCol Cols="12"><VelocityCommand/></MCol>
+
+                    </MRow>
+                </MTabItem>
+                <MTabItem>
+                    <TorqueTest></TorqueTest>
                 </MTabItem>
             </MTabsItems>
             
@@ -176,6 +201,16 @@
     private void MsmTorqueModeToIdle()
     {
         CommandCommunicationService.SetSymbolValue("msm_torque_to_idle", 1.0f);
+    }
+
+    private void MsmIdleToTestTorqueBs()
+    {
+        CommandCommunicationService.SetSymbolValue("msm_idle_to_test_torquebs", 1.0f);
+    }
+    
+    private void MsmTestTorqueBsToIdle()
+    {
+        CommandCommunicationService.SetSymbolValue("msm_test_torquebs_to_idle", 1.0f);
     }
     #endregion
 }
