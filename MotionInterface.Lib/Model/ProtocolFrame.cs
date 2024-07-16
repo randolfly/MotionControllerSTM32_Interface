@@ -11,7 +11,7 @@ public class ProtocolFrame
     public ProtocolCommand Command = ProtocolCommand.NullCmd;
     public byte[] ParamData = Array.Empty<byte>();
     public byte Checksum;
-    
+
     public string DateTime = System.DateTime.Now.ToString("HH:mm:ss:ms");
 
     /// <summary>
@@ -39,9 +39,9 @@ public class ProtocolFrame
              ProtocolConfig.ProtocolFrameHeaderSize,
             ParamData.Length);
 
-        Checksum = ByteOperator.CalculateChecksum(dataDest, 
+        Checksum = ByteOperator.CalculateChecksum(dataDest,
             0,
-            Length-1);
+            Length - 1);
         dataDest[Length - 1] = Checksum;
     }
 
@@ -50,7 +50,7 @@ public class ProtocolFrame
     /// </summary>
     /// <param name="data">data array destination</param>
     /// <param name="offset">data array start offset</param> 
-    public void DeserializeFrameData(ref byte[] data, int offset=0)
+    public void DeserializeFrameData(ref byte[] data, int offset = 0)
     {
         var targetFrameData = data
             .Skip(offset).ToArray();
@@ -99,7 +99,7 @@ public class ProtocolFrame
             Command = Command,
             ParamData = new byte[ParamData.Length],
         };
-        for (var id=0;id<ParamData.Length;id++)
+        for (var id = 0; id < ParamData.Length; id++)
         {
             newProtocolFrame.ParamData[id] = ParamData[id];
         }
@@ -112,9 +112,9 @@ public class ProtocolFrame
         DateTime = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ms");
     }
 
-    
-    
-    
+
+
+
     /// <summary>
     /// FRAME DATA => UI 
     /// </summary>
@@ -124,13 +124,13 @@ public class ProtocolFrame
         return Command switch
         {
             ProtocolCommand.GetSymbolDataCmd => ParamData.ByteArrayToNameString(),
-            ProtocolCommand.GetEchoSymbolDataCmd => ParamData.ByteArrayToFloatString(),
-            ProtocolCommand.SetSymbolDataCmd => ParamData.ByteArrayToNameStringAndFloat(),
-            ProtocolCommand.SetEchoSymbolDataCmd => ParamData.ByteArrayToNameStringAndFloat(),
+            ProtocolCommand.GetEchoSymbolDataCmd => ParamData.ByteArrayToDoubleString(),
+            ProtocolCommand.SetSymbolDataCmd => ParamData.ByteArrayToNameStringAndDouble(),
+            ProtocolCommand.SetEchoSymbolDataCmd => ParamData.ByteArrayToNameStringAndDouble(),
             ProtocolCommand.DataLogEchoGetAvailableDataCmd => ParamData.ByteArrayToNameString(),
             ProtocolCommand.DataLogEchoSetLogDataCmd => ParamData.ByteArrayToNameString(),
             ProtocolCommand.DataLogSetLogDataCmd => ParamData.ByteArrayToNameString(),
-            _ => ParamData.ByteArrayToFloatString()
+            _ => ParamData.ByteArrayToDoubleString()
         };
     }
 
@@ -144,9 +144,9 @@ public class ProtocolFrame
         ParamData = Command switch
         {
             ProtocolCommand.GetSymbolDataCmd => paramDataString.NameStringToByteArray(),
-            ProtocolCommand.SetSymbolDataCmd => paramDataString.NameStringAndFloatToByteArray(),
+            ProtocolCommand.SetSymbolDataCmd => paramDataString.NameStringAndDoubleToByteArray(),
             ProtocolCommand.DataLogSetLogDataCmd => paramDataString.NameStringToByteArray(),
-            _ => paramDataString.FloatStringToByteArray()
+            _ => paramDataString.DoubleStringToByteArray()
         };
     }
 }

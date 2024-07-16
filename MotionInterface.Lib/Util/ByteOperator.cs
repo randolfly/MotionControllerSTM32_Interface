@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using ProtocolConfig = MotionInterface.Lib.Model.ProtocolConfig;
 
 namespace MotionInterface.Lib.Util;
 using System.Buffers.Binary;
@@ -62,23 +63,23 @@ public static class ByteOperator
         return sb.ToString();
     }
 
-    public static float[] ByteArrayToFloatArray(this byte[] data)
+    public static double[] ByteArrayToDoubleArray(this byte[] data)
     {
-        // 4bit - float
-        var floatArray = new float[data.Length / 4];
-        for (var i = 0; i < data.Length; i += 4)
+        // 4bit - double
+        var doubleArray = new double[data.Length / ProtocolConfig.ProtocolDatalogTypeSize];
+        for (var i = 0; i < data.Length; i += ProtocolConfig.ProtocolDatalogTypeSize)
         {
-            floatArray[i / 4] = BitConverter.ToSingle(data, i);
+            doubleArray[i / ProtocolConfig.ProtocolDatalogTypeSize] = BitConverter.ToDouble(data, i);
         }
-        return floatArray;
+        return doubleArray;
     }
 
-    public static byte[] FloatArrayToByteArray(this float[] data)
+    public static byte[] DoubleArrayToByteArray(this double[] data)
     {
-        var byteArray = new byte[data.Length * 4];
+        var byteArray = new byte[data.Length * ProtocolConfig.ProtocolDatalogTypeSize];
         for (var i = 0; i < data.Length; i++)
         {
-            BitConverter.GetBytes(data[i]).CopyTo(byteArray, i * 4);
+            BitConverter.GetBytes(data[i]).CopyTo(byteArray, i * ProtocolConfig.ProtocolDatalogTypeSize);
         }
         return byteArray;
     }
@@ -89,27 +90,29 @@ public static class ByteOperator
     /// <param name="data"></param>
     /// <param name="separator"></param>
     /// <returns></returns>
-    public static string ByteArrayToFloatString(this byte[] data, char separator = ',')
+    public static string ByteArrayToDoubleString(this byte[] data, char separator = ',')
     {
-        var floatArray = data.ByteArrayToFloatArray();
-        return floatArray.FloatArrayToFloatString(separator);
+        var doubleArray = data.ByteArrayToDoubleArray();
+        return doubleArray.DoubleArrayToDoubleString(separator);
     }
 
-    public static byte[] FloatStringToByteArray(this string rawCommand, char separator = ',')
+    public static byte[] DoubleStringToByteArray(this string rawCommand, char separator = ',')
     {
-        var floatArray = rawCommand.FloatStringToFloatArray(separator);
-        return floatArray.FloatArrayToByteArray();
+        var doubleArray = rawCommand.DoubleStringToDoubleArray(separator);
+        return doubleArray.DoubleArrayToByteArray();
     }
 
-    public static string FloatArrayToFloatString(this float[] data, char separator = ',') {
+    public static string DoubleArrayToDoubleString(this double[] data, char separator = ',')
+    {
         return string.Join(separator, data);
     }
 
-    public static float[] FloatStringToFloatArray(this string rawCommand, char separator = ',') {
+    public static double[] DoubleStringToDoubleArray(this string rawCommand, char separator = ',')
+    {
         var stringArray = rawCommand.Trim().Split(separator);
-        var floatArray = stringArray.Where(s => s.Length > 0)
-            .Select(float.Parse).ToArray();
-        return floatArray;
+        var doubleArray = stringArray.Where(s => s.Length > 0)
+            .Select(double.Parse).ToArray();
+        return doubleArray;
     }
 
     /// <summary>
@@ -123,12 +126,12 @@ public static class ByteOperator
         var midString = string.Join(separator, nameString);
         return midString.NameStringToByteArray(separator);
     }
-    
+
     public static byte[] NameStringToByteArray(this string nameString, char separator = ',')
     {
         return Encoding.UTF8.GetBytes(nameString);
     }
-    
+
     /// <summary>
     /// [UTF8] convert byte array to name string list, such as [0x11,0x22,...] => "kp, ki, kd" => ["kp", "ki", "kd"]
     /// </summary>
@@ -137,43 +140,43 @@ public static class ByteOperator
     /// <returns>name string</returns>
     public static List<string> ByteArrayToNameStringList(this byte[] byteArray, char separator = ',')
     {
-        var midString = Encoding.UTF8.GetString(byteArray);;
+        var midString = Encoding.UTF8.GetString(byteArray); ;
         return midString.Split(separator).ToList();
     }
-    
+
     public static string ByteArrayToNameString(this byte[] byteArray, char separator = ',')
     {
         return Encoding.UTF8.GetString(byteArray);
     }
-    
+
     /// <summary>
-    /// used to convert string_float param data to string, for SET cmd
+    /// used to convert string_double param data to string, for SET cmd
     /// </summary>
     /// <param name="data">src param data array</param>
     /// <returns>param name: param value</returns>
-    public static string ByteArrayToNameStringAndFloat(this byte[] data)
+    public static string ByteArrayToNameStringAndDouble(this byte[] data)
     {
-        var stringValue = data.Take(data.Length - 4).ToArray().ByteArrayToNameString();
-        var floatValue = BitConverter.ToSingle(data, data.Length - 4);
-        return CombineNameStringAndFloat(stringValue, floatValue);
+        var stringValue = data.Take(data.Length - ProtocolConfig.ProtocolDatalogTypeSize).ToArray().ByteArrayToNameString();
+        var doubleValue = BitConverter.ToDouble(data, data.Length - ProtocolConfig.ProtocolDatalogTypeSize);
+        return CombineNameStringAndDouble(stringValue, doubleValue);
     }
-    
-    public static string CombineNameStringAndFloat(string nameString, float floatValue)
+
+    public static string CombineNameStringAndDouble(string nameString, double doubleValue)
     {
-        return $"{nameString}:{floatValue}";
+        return $"{nameString}:{doubleValue}";
     }
-    
+
     /// <summary>
-    /// convert string_float param data to byte array, for SET cmd
+    /// convert string_double param data to byte array, for SET cmd
     /// </summary>
     /// <param name="nameString"></param>
     /// <returns></returns>
-    public static byte[] NameStringAndFloatToByteArray(this string nameString)
+    public static byte[] NameStringAndDoubleToByteArray(this string nameString)
     {
         var result = nameString.Split(':');
         var stringValue = result[0].NameStringToByteArray();
-        var floatValue = result[1].FloatStringToByteArray();
-        var targetByteArray = stringValue.Concat(floatValue).ToArray();
+        var doubleValue = result[1].DoubleStringToByteArray();
+        var targetByteArray = stringValue.Concat(doubleValue).ToArray();
         return targetByteArray;
     }
 }

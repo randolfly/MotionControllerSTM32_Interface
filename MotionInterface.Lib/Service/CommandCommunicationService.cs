@@ -12,24 +12,24 @@ namespace MotionInterface.Lib.Service;
 public class CommandCommunicationService
 {
     public readonly SerialPort SerialPort = new();
-    public readonly List<ProtocolFrame> ReceivedProtocolFrameList = new ();
-    public readonly List<ProtocolFrame> SendProtocolFrameList = new ();
+    public readonly List<ProtocolFrame> ReceivedProtocolFrameList = new();
+    public readonly List<ProtocolFrame> SendProtocolFrameList = new();
 
     /// <summary>
     /// current protocol frame(for send and receive)
     /// </summary>
     public ProtocolFrame ProtocolFrame = new();
-    
+
     private readonly ProtocolParserService _protocolParserService = new();
     private readonly PeriodicActionTimer _periodicActionTimer;
-    
+
     public List<string> AvailableSymbolName { get; set; } = new();
     public List<string> RecordSymbolName { get; set; } = new();
     public List<string> EchoRecordSymbolName { get; set; } = new();
     public List<string> GraphSymbolName { get; set; } = new();
-    
-    public MotionState MotionState { get; set; } = MotionState.Init;   
-    
+
+    public MotionState MotionState { get; set; } = MotionState.Init;
+
     public CommandCommunicationService()
     {
         SerialPort.BaudRate = 115200;
@@ -59,9 +59,9 @@ public class CommandCommunicationService
         SerialPort.Write(data, 0, protocolFrame.Length);
         SendProtocolFrameList.Add(protocolFrame.DeepClone());
     }
-    
+
     #endregion
-    
+
     #region ReceiveFrameData
 
     /// <summary>
@@ -77,7 +77,7 @@ public class CommandCommunicationService
         SerialPort.Read(data, 0, dataReceived);
         _protocolParserService.ProtocolDataReceive(ref data, (ushort)dataReceived);
     }
-    
+
     /// <summary>
     /// parse the first received frame data.
     /// periodically execution, default period is 10Hz
@@ -91,22 +91,22 @@ public class CommandCommunicationService
         switch (ProtocolFrame.Command)
         {
             case ProtocolCommand.GetEchoSymbolDataCmd:
-            {
-                // only used for get motion state
-                MotionState = (MotionState)ProtocolFrame.ParamData.ByteArrayToFloatArray().First();
-                break;
-            }
+                {
+                    // only used for get motion state
+                    MotionState = (MotionState)ProtocolFrame.ParamData.ByteArrayToDoubleArray().First();
+                    break;
+                }
             case ProtocolCommand.DataLogEchoGetAvailableDataCmd:
-            {
-                AvailableSymbolName = ProtocolFrame.ParamData.ByteArrayToNameStringList();
-                OnAvailableSymbolNameChanged?.Invoke();
-                break;
-            }
+                {
+                    AvailableSymbolName = ProtocolFrame.ParamData.ByteArrayToNameStringList();
+                    OnAvailableSymbolNameChanged?.Invoke();
+                    break;
+                }
             case ProtocolCommand.DataLogEchoSetLogDataCmd:
-            {
-                EchoRecordSymbolName = ProtocolFrame.ParamData.ByteArrayToNameStringList();
-                break;
-            }
+                {
+                    EchoRecordSymbolName = ProtocolFrame.ParamData.ByteArrayToNameStringList();
+                    break;
+                }
         }
 
         OnParseFrameDataAction?.Invoke(ProtocolFrame);
@@ -115,7 +115,7 @@ public class CommandCommunicationService
     #endregion
 
     #region util functions
-    
+
     public void GetMotionState()
     {
         SendFrameData(new ProtocolFrame
@@ -125,16 +125,16 @@ public class CommandCommunicationService
         });
     }
 
-    public void SetSymbolValue(string symbolName, float value)
+    public void SetSymbolValue(string symbolName, double value)
     {
         SendFrameData(new ProtocolFrame
         {
             Command = ProtocolCommand.SetSymbolDataCmd,
-            ParamData = ByteOperator.CombineNameStringAndFloat(symbolName, value)
-                .NameStringAndFloatToByteArray()
+            ParamData = ByteOperator.CombineNameStringAndDouble(symbolName, value)
+                .NameStringAndDoubleToByteArray()
         });
     }
-    
+
     public void GetAvailableRecordDataNames()
     {
         var checkAvailableDataFrame = new ProtocolFrame
@@ -162,7 +162,7 @@ public class CommandCommunicationService
         };
         SendFrameData(startRecordDataFrame);
     }
-    
+
     public void StopRecordData()
     {
         var stopRecordDataFrame = new ProtocolFrame
@@ -171,7 +171,7 @@ public class CommandCommunicationService
         };
         SendFrameData(stopRecordDataFrame);
     }
-   
+
     public void OpenPort()
     {
         try
@@ -185,7 +185,7 @@ public class CommandCommunicationService
             Console.WriteLine(e);
         }
     }
-    
+
     public void ClosePort()
     {
         try
@@ -239,8 +239,8 @@ public class CommandCommunicationService
         }
         return infos;
     }
-    
+
     #endregion
-    
-    
+
+
 }

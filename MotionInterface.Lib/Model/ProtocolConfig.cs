@@ -13,6 +13,8 @@ public static class ProtocolConfig
     public const ushort ProtocolFrameMotorIdOffset = 4;
     public const ushort ProtocolFrameLengthOffset = 5;
     public const ushort ProtocolFrameCommandOffset = 7;
+
+    public const ushort ProtocolDatalogTypeSize = 8;
 }
 
 public enum ProtocolFrameHeader : uint
@@ -29,39 +31,39 @@ public enum MotorId : byte
 
 public enum ProtocolCommand : ushort
 {
-    
+
     #region CONTROL
 
-    
+
 
     #endregion
 
     #region GET
 
-    GetSymbolDataCmd = 0x1001, 
+    GetSymbolDataCmd = 0x1001,
     GetEchoSymbolDataCmd = 0x1101,
 
     #endregion
 
     #region SET
 
-    SetSymbolDataCmd = 0x2001, 
+    SetSymbolDataCmd = 0x2001,
     SetEchoSymbolDataCmd = 0x2101,
 
     #endregion
-    
+
 
     #region DATALOG
-    
+
     DataLogGetAvailableDataCmd = 0x3001,
     DataLogEchoGetAvailableDataCmd = 0x3101,
-    
+
     DataLogSetLogDataCmd = 0x3002,
     DataLogEchoSetLogDataCmd = 0x3102,
-    
+
     DataLogStartLogCmd = 0x3003,
     DataLogStopLogCmd = 0x3004,
-    
+
     //! only this cmd is sent in high-speed uart port
     DataLogRunningCmd = 0x3103,
     #endregion

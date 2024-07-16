@@ -4,8 +4,7 @@
 <MCard>
     <MRow>
         <MCol Cols="4">
-            <MTextField Type="number" TValue="float" Label="Position Command"
-                        @bind-Value="TargetPosition">
+            <MTextField Type="number" TValue="double" Label="Position Command" @bind-Value="TargetPosition">
             </MTextField>
         </MCol>
         <MCol Cols="4">
@@ -14,18 +13,18 @@
             </MButton>
         </MCol>
         @* <MCol Cols="4"> *@
-        @*     <MButton OnClick="()=>SetPosition(0)"> *@
-        @*         Stop Motor *@
-        @*     </MButton> *@
+        @* <MButton OnClick="()=>SetPosition(0)"> *@
+        @* Stop Motor *@
+        @* </MButton> *@
         @* </MCol> *@
     </MRow>
 </MCard>
 
 @code {
 
-    public float TargetPosition { get; set; } = 0;
+    public double TargetPosition { get; set; } = 0;
 
-    private void SetPosition(float targetPosition)
+    private void SetPosition(double targetPosition)
     {
         CommandCommunicationService.SetSymbolValue("target_pos", targetPosition);
     }

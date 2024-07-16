@@ -4,9 +4,8 @@
 <MCard>
     <MRow>
         <MCol Cols="6">
-            <MTextField Type="number" TValue="float" Label="SignalMagnitude"
-                        @bind-Value="SignalMagnitude"
-                        NumberProps="@(prop => { prop.Min = 0; prop.Max = 1000; prop.Step = 1; })">
+            <MTextField Type="number" TValue="double" Label="SignalMagnitude" @bind-Value="SignalMagnitude"
+                NumberProps="@(prop => { prop.Min = 0; prop.Max = 1000; prop.Step = 1; })">
             </MTextField>
         </MCol>
         <MCol Cols="6">
@@ -17,9 +16,8 @@
     </MRow>
     <MRow>
         <MCol Cols="6">
-            <MTextField Type="number" TValue="float" Label="SignalGain"
-                        @bind-Value="SignalGain"
-                        NumberProps="@(prop => { prop.Min = 0.5m; prop.Max = 1.3m; prop.Step = 0.1m; })">
+            <MTextField Type="number" TValue="double" Label="SignalGain" @bind-Value="SignalGain"
+                NumberProps="@(prop => { prop.Min = 0.5m; prop.Max = 1.3m; prop.Step = 0.1m; })">
             </MTextField>
         </MCol>
         <MCol Cols="6">
@@ -32,14 +30,14 @@
 
 @code {
 
-    public float SignalMagnitude { get; set; } = 250;
-    public float SignalGain { get; set; } = 1;
+    public double SignalMagnitude { get; set; } = 250;
+    public double SignalGain { get; set; } = 1;
 
     private void SetSignalMagnitude()
     {
         CommandCommunicationService.SetSymbolValue("excitation_signal_magnitude", SignalMagnitude);
     }
-    
+
     private void SetSignalGain()
     {
         CommandCommunicationService.SetSymbolValue("excitation_signal_gain", SignalGain);

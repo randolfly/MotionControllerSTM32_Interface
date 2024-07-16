@@ -73,12 +73,12 @@ public partial class FigureViewWindow : System.Windows.Window
         return $"{position * LogPeriod}";
     }
 
-    public void UpdateDataList(List<float> data)
+    public void UpdateDataList(List<double> data)
     {
         data.ForEach(UpdateData);
     }
-    
-    public void UpdateData(float data)
+
+    public void UpdateData(double data)
     {
         if (_nextDataIndex >= Maxlength)
         {
@@ -86,7 +86,7 @@ public partial class FigureViewWindow : System.Windows.Window
             // clear all data and begin new figure
             _nextDataIndex = 0;
         }
-        
+
         LogData[_nextDataIndex] = data;
         SignalPlot.MaxRenderIndex = _nextDataIndex;
         if (_nextDataIndex > MaxRenderLength)

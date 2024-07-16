@@ -12,8 +12,8 @@ public class DataLogService
     private readonly DataCommunicationService _dataCommunicationService;
     private readonly CommandCommunicationService _commandCommunicationService;
     private readonly AppConfigService _appConfigService;
-    
-    public DataLogService(DataCommunicationService dataCommunicationService, 
+
+    public DataLogService(DataCommunicationService dataCommunicationService,
         CommandCommunicationService commandCommunicationService,
         AppConfigService appConfigService)
     {
@@ -27,18 +27,18 @@ public class DataLogService
     }
 
     /// <summary>
-    /// record data list, shape: [symbol count, data count], float data
+    /// record data list, shape: [symbol count, data count], double data
     /// example: 3 symbol data, 1000 data count, shape: [1000, 3]
     /// </summary>
-    public List<List<float>> RecordData { get; } = new();
-    
+    public List<List<double>> RecordData { get; } = new();
+
     // todo: Add recurrent save file action
     public DataLogConfig DataLogConfig = new();
     public PeriodicActionTimer PeriodicActionTimer { get; set; }
     public bool ExportCsvTempWithHeader { get; set; } = true;
     public int BackupLogStartId { get; set; } = 0;
     public int BackupLogEndId { get; set; }
-    
+
     // extended action for the parsed frame data event
     public Action<int>? OnParseFrameDataAction { get; set; }
 
@@ -55,7 +55,7 @@ public class DataLogService
         PeriodicActionTimer.StopTimer();
         _dataCommunicationService.ClosePort();
     }
-    
+
     private void UpdateRecordData()
     {
         var startId = RecordData.Count;
@@ -63,11 +63,11 @@ public class DataLogService
         var endId = receivedFrameData.Count;
         for (var i = startId; i < endId; i++)
         {
-            RecordData.Add(receivedFrameData[i].ParamData.ByteArrayToFloatArray().ToList());
+            RecordData.Add(receivedFrameData[i].ParamData.ByteArrayToDoubleArray().ToList());
         }
         OnParseFrameDataAction?.Invoke(startId);
     }
-    
+
     private async void BackupCsvLog()
     {
         var backupFileName = _appConfigService.AppConfig.DataLogConfig.TempFileFullName + ".tmp";
@@ -119,7 +119,7 @@ public class DataLogService
         }
 
         for (var i = startId; i < endId; i++)
-            sb.AppendLine(string.Join(',', RecordData[i].Select(s=>s.ToString(CultureInfo.InvariantCulture))));
+            sb.AppendLine(string.Join(',', RecordData[i].Select(s => s.ToString(CultureInfo.InvariantCulture))));
         return sb.ToString();
     }
 
@@ -133,13 +133,13 @@ public class DataLogService
         return sb.ToString();
     }
 
-    private Dictionary<string, Matrix<float>> GetRecordMatDict()
+    private Dictionary<string, Matrix<double>> GetRecordMatDict()
     {
-        var exportMatDict = new Dictionary<string, Matrix<float>>();
+        var exportMatDict = new Dictionary<string, Matrix<double>>();
         var maxLength = RecordData.Count;
         for (var i = 0; i < _commandCommunicationService.RecordSymbolName.Count; i++)
         {
-            var recordSymbolData = Matrix<float>.Build
+            var recordSymbolData = Matrix<double>.Build
                 .Dense(maxLength, 1, RecordData.Select(d => d[i]).ToArray());
             exportMatDict.Add(_commandCommunicationService.RecordSymbolName[i].Replace(".", "_"), recordSymbolData);
         }
@@ -147,5 +147,5 @@ public class DataLogService
         return exportMatDict;
     }
 
-    
+
 }
