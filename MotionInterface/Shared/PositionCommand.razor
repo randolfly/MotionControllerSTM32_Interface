@@ -44,9 +44,9 @@
 
     private void SetPositionParam()
     {
-        CommandCommunicationService.SetSymbolValue("target_pos", TargetPosition);
         CommandCommunicationService.SetSymbolValue("max_vel", MaxVelocity);
         CommandCommunicationService.SetSymbolValue("max_acc", MaxAcceleration);
         CommandCommunicationService.SetSymbolValue("max_jerk", MaxJerk);
+        CommandCommunicationService.SetSymbolValue("target_pos", TargetPosition);
     }
 }
