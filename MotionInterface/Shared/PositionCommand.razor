@@ -4,12 +4,27 @@
 <MCard>
     <MRow>
         <MCol Cols="4">
-            <MTextField Type="number" TValue="double" Label="Position Command" @bind-Value="TargetPosition">
+            <MTextField Type="number" TValue="double" Label="Target Pos" @bind-Value="TargetPosition">
             </MTextField>
         </MCol>
         <MCol Cols="4">
-            <MButton OnClick="()=>SetPosition(TargetPosition)">
-                Set Position
+            <MTextField Type="number" TValue="double" Label="Max Vel" @bind-Value="MaxVelocity"
+                        NumberProps="@(prop => { prop.Min = 0.01m; prop.Max = 2; prop.Step = 0.1m; })">
+            </MTextField>
+        </MCol>
+        <MCol Cols="4">
+            <MTextField Type="number" TValue="double" Label="Max Acc" @bind-Value="MaxAcceleration"
+                        NumberProps="@(prop => { prop.Min = 0.01m; prop.Max = 2; prop.Step = 0.1m; })">
+            </MTextField>
+        </MCol>
+        <MCol Cols="4">
+            <MTextField Type="number" TValue="double" Label="Max Jerk" @bind-Value="MaxJerk"
+                        NumberProps="@(prop => { prop.Min = 0.01m; prop.Max = 2; prop.Step = 0.1m; })">
+            </MTextField>
+        </MCol>
+        <MCol Cols="4">
+            <MButton OnClick="()=>SetPositionParam()">
+                Set Param
             </MButton>
         </MCol>
         @* <MCol Cols="4"> *@
@@ -23,9 +38,15 @@
 @code {
 
     public double TargetPosition { get; set; } = 0;
+    public double MaxVelocity { get; set; } = 2;
+    public double MaxAcceleration { get; set; } = 1;
+    public double MaxJerk { get; set; } = 1;
 
-    private void SetPosition(double targetPosition)
+    private void SetPositionParam()
     {
-        CommandCommunicationService.SetSymbolValue("target_pos", targetPosition);
+        CommandCommunicationService.SetSymbolValue("target_pos", TargetPosition);
+        CommandCommunicationService.SetSymbolValue("max_vel", MaxVelocity);
+        CommandCommunicationService.SetSymbolValue("max_acc", MaxAcceleration);
+        CommandCommunicationService.SetSymbolValue("max_jerk", MaxJerk);
     }
 }
