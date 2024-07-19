@@ -1,0 +1,47 @@
+﻿@using MotionInterface.Lib.Service
+@inject CommandCommunicationService CommandCommunicationService
+
+<MCard>
+    <MRow>
+        <MCol Cols="4">
+            <MTextField Type="number" TValue="double" Label="Velocity Command" @bind-Value="TargetVelocity"
+                NumberProps="@(prop => { prop.Min = -2; prop.Max = 2; prop.Step = 0.1m; })">
+            </MTextField>
+        </MCol>
+        <MCol Cols="4">
+            <MButton OnClick="()=>SetVelocity(TargetVelocity)">
+                Set Velocity
+            </MButton>
+        </MCol>
+        <MCol Cols="4">
+            <MButton OnClick="StartReset">
+                StartReset
+            </MButton>
+        </MCol>
+        <MCol Cols="4">
+            <MButton OnClick="ReachZero">
+                ReachZero
+            </MButton>
+        </MCol>
+    </MRow>
+</MCard>
+
+@code {
+
+    public double TargetVelocity { get; set; } = 0.5;
+
+    private void SetVelocity(double targetVelocity)
+    {
+        CommandCommunicationService.SetSymbolValue("reset_pos_target_vel", targetVelocity);
+    }
+    
+    private void StartReset()
+    {
+        CommandCommunicationService.SetSymbolValue("reset_pos_execute", 1.0);
+    }
+    
+    private void ReachZero()
+    {
+        CommandCommunicationService.SetSymbolValue("reset_pos_reach_ideal", 1.0);
+    }
+}
