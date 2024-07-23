@@ -35,7 +35,7 @@ public class CommandCommunicationService
         SerialPort.BaudRate = 115200;
         SerialPort.ReadBufferSize = 4096;
         SerialPort.DataReceived += PortDataReceived;
-        _periodicActionTimer = new PeriodicActionTimer(ParseReceivedFrames, 100);
+        _periodicActionTimer = new PeriodicActionTimer(ParseReceivedFrames, 20);
     }
 
     public bool IsPortOpen => SerialPort.IsOpen;

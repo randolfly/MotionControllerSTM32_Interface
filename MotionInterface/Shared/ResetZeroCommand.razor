@@ -18,11 +18,6 @@
                 StartReset
             </MButton>
         </MCol>
-        <MCol Cols="4">
-            <MButton OnClick="ReachZero">
-                ReachZero
-            </MButton>
-        </MCol>
     </MRow>
 </MCard>
 
@@ -38,10 +33,5 @@
     private void StartReset()
     {
         CommandCommunicationService.SetSymbolValue("reset_pos_execute", 1.0);
-    }
-    
-    private void ReachZero()
-    {
-        CommandCommunicationService.SetSymbolValue("reset_pos_reach_ideal", 1.0);
     }
 }
