@@ -174,25 +174,25 @@
         CommandCommunicationService.SetSymbolValue("msm_idle_to_exit", 1.0f);
     }
     
-    private async void MsmIdleToPosMode()
+    private void MsmIdleToPosMode()
     {
+        CommandCommunicationService.SetSymbolValue("profile_execute", 0);
+        CommandCommunicationService.SetSymbolValue("max_vel", 2);
+        CommandCommunicationService.SetSymbolValue("max_acc", 1);
+        CommandCommunicationService.SetSymbolValue("max_jerk", 1);
+        CommandCommunicationService.SetSymbolValue("target_pos", 0.0001);    // todo: target pos ->current pos
+        CommandCommunicationService.SetSymbolValue("profile_execute", 1);
+        
         CommandCommunicationService.SetSymbolValue("msm_idle_to_pos", 1.0f);
+        
+        Thread.Sleep(300);
         
         CommandCommunicationService.SetSymbolValue("profile_execute", 0);
         CommandCommunicationService.SetSymbolValue("max_vel", 2);
         CommandCommunicationService.SetSymbolValue("max_acc", 1);
         CommandCommunicationService.SetSymbolValue("max_jerk", 1);
-        CommandCommunicationService.SetSymbolValue("target_pos", 0.001);    // todo: target pos ->current pos
+        CommandCommunicationService.SetSymbolValue("target_pos", 0);    // todo: target pos ->current pos
         CommandCommunicationService.SetSymbolValue("profile_execute", 1);
-        
-        // Thread.Sleep(1000);
-        //
-        // CommandCommunicationService.SetSymbolValue("profile_execute", 0);
-        // CommandCommunicationService.SetSymbolValue("max_vel", 2);
-        // CommandCommunicationService.SetSymbolValue("max_acc", 1);
-        // CommandCommunicationService.SetSymbolValue("max_jerk", 1);
-        // CommandCommunicationService.SetSymbolValue("target_pos", 0);    // todo: target pos ->current pos
-        // CommandCommunicationService.SetSymbolValue("profile_execute", 1);
     }
     
     private void MsmPosModeToIdle()
